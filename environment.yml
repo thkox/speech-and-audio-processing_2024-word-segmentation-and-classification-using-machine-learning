@@ -6,4 +6,9 @@ dependencies:
   - python=3.11
   - numpy=1.25.*
   - librosa=0.10.*
-  - tensorflow=2.15.0
+  - tensorflow=2.16.1
+  - keras
+  - pandas
+  #- cudatoolkit=11.8 # Uncomment these lines if you have an NVIDIA GPU
+  #- cudnn=8.6
+  #- tensorrt # Uncomment if you intend to use TensorRT
