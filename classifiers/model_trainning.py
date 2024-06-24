@@ -1,9 +1,8 @@
-# model_training.py
-import numpy as np
-from sklearn import svm
-from sklearn.linear_model import LinearRegression
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, SimpleRNN
+# import numpy as np
+# from sklearn import svm
+# from sklearn.linear_model import LinearRegression
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import Dense, SimpleRNN
 
 
 # def train_classifiers():
