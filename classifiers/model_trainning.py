@@ -6,7 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, SimpleRNN
 
 
-def train_classifiers():
+# def train_classifiers():
     # Load the extracted features
     # X_train = np.load('X_train.npy')
     # Y_train = np.load('y_train.npy')
