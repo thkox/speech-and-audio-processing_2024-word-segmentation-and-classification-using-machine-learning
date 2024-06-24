@@ -35,7 +35,7 @@ The environment.yml file specifies the required dependencies:
 - Python 3.11
 - NumPy 1.25.x
 - librosa 0.10.0
-- TensorFlow 2.13.0
+- TensorFlow 2.15.0
 
 
 ### Summary
