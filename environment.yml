@@ -1,0 +1,9 @@
+name: speech-and-audio-processing
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy=1.25.*
+  - librosa=0.10.0
+  - tensorflow=2.15.0
