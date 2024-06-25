@@ -5,88 +5,78 @@ import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 
 # Define the directories for the datasets
-background_sound_dir = 'files/datasets/background_sound'
-foreground_sound_dir = 'files/datasets/foreground_sound'
+BACKGROUND_SOUND_DIR = 'files/datasets/background_sound'
+FOREGROUND_SOUND_DIR = 'files/datasets/foreground_sound'
+
+# Define constants for feature extraction parameters
+N_MFCC = 96  # Number of Mel-frequency cepstral coefficients (MFCCs) features to extract
+N_MELS = 80  # Number of Mel bands to generate
+N_FFT = 400  # FFT window size
+HOP_LENGTH = 200  # Number of samples between successive frames
 
 
-# Function to load a .wav file and extract MFCC and Mel spectrogram features
-def load_and_extract_features(file_path, n_mfcc=96, n_mels=80, n_fft=1024, hop_length=512):
+# Function to load a .wav file and extract MFCC features for each frame
+def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH):
     """
-    Load an audio file and extract MFCC and Mel spectrogram features.
+    Load an audio file and extract MFCC features for each frame.
 
     Args:
         file_path (str): Path to the audio file.
         n_mfcc (int): Number of MFCC features to extract.
-        n_mels (int): Number of Mel bands to generate.
         n_fft (int): FFT window size.
         hop_length (int): Number of samples between successive frames.
 
     Returns:
-        np.ndarray: Mean MFCC features.
-        np.ndarray: Log Mel spectrogram.
+        np.ndarray: MFCC features for each frame.
     """
     print(f"Loading and extracting features from {file_path}")
     audio, sample_rate = librosa.load(file_path, sr=None)
 
-    # Extract MFCC features
+    # Apply Hamming windowing to each frame before analysis
+    audio_windowed = librosa.util.frame(audio, frame_length=n_fft, hop_length=hop_length)
+    audio_windowed = np.hamming(n_fft)[:, np.newaxis] * audio_windowed
+
+    # Extract MFCC features for each frame
     mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=n_mfcc, n_fft=n_fft, hop_length=hop_length)
-    mfccs_mean = np.mean(mfccs.T, axis=0)
 
-    # Compute the Mel spectrogram
-    mel_spectrogram = librosa.feature.melspectrogram(y=audio, sr=sample_rate, n_fft=n_fft, hop_length=hop_length,
-                                                     n_mels=n_mels)
-
-    # Convert to log scale (dB). We'll use the peak power (max) as reference.
-    log_mel_spectrogram = librosa.power_to_db(mel_spectrogram, ref=np.max)
-
-    # Plotting the Mel spectrogram
-    plt.figure(figsize=(10, 4))
-    librosa.display.specshow(log_mel_spectrogram, sr=sample_rate, x_axis='time', y_axis='mel')
-    plt.colorbar(format='%+2.0f dB')
-    plt.title('Mel spectrogram')
-    plt.tight_layout()
-    plt.show()
-
-    return mfccs_mean, log_mel_spectrogram
+    return mfccs.T  # Return MFCCs for each frame (transposed for convenience)
 
 
-# Function to load all .wav files in a directory and extract features
-def load_audio_files_and_extract_features(directory, label, n_mfcc=96, n_mels=80, n_fft=1024, hop_length=512):
+# Function to load all .wav files in a directory and extract features for each frame
+def load_audio_files_and_extract_features(directory, label, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH):
     """
-    Load all audio files in a directory and extract MFCC and Mel spectrogram features.
+    Load all audio files in a directory and extract MFCC features for each frame.
 
     Args:
         directory (str): Path to the directory containing audio files.
         label (int): Label for the audio files (0 for background, 1 for foreground).
         n_mfcc (int): Number of MFCC features to extract.
-        n_mels (int): Number of Mel bands to generate.
         n_fft (int): FFT window size.
         hop_length (int): Number of samples between successive frames.
 
     Returns:
-        np.ndarray: Extracted features.
+        np.ndarray: Extracted features for all frames.
         np.ndarray: Labels for the features.
     """
     print(f"Loading audio files from {directory} and extracting features")
-    features = []
-    labels = []
+    all_features = []
+    all_labels = []
     for file_name in os.listdir(directory):
         if file_name.endswith('.wav'):
             file_path = os.path.join(directory, file_name)
-            mfccs_mean, _ = load_and_extract_features(file_path, n_mfcc, n_mels, n_fft, hop_length)
-            features.append(mfccs_mean)
-            labels.append(label)
-    return np.array(features), np.array(labels)
+            mfccs = load_and_extract_features(file_path, n_mfcc, n_fft, hop_length)
+            all_features.append(mfccs)
+            all_labels.append(np.full(mfccs.shape[0], label))
+    return np.vstack(all_features), np.hstack(all_labels)
 
 
 # Main execution for feature extraction
-def extract_features(n_mfcc=96, n_mels=80, n_fft=1024, hop_length=512):
+def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH):
     """
     Extract features from both background and foreground sound datasets.
 
     Args:
         n_mfcc (int): Number of MFCC features to extract.
-        n_mels (int): Number of Mel bands to generate.
         n_fft (int): FFT window size.
         hop_length (int): Number of samples between successive frames.
 
@@ -96,11 +86,11 @@ def extract_features(n_mfcc=96, n_mels=80, n_fft=1024, hop_length=512):
     """
     print("Starting feature extraction")
 
-    # Load audio files and extract features
-    background_features, background_labels = load_audio_files_and_extract_features(background_sound_dir, 0, n_mfcc,
-                                                                                   n_mels, n_fft, hop_length)
-    foreground_features, foreground_labels = load_audio_files_and_extract_features(foreground_sound_dir, 1, n_mfcc,
-                                                                                   n_mels, n_fft, hop_length)
+    # Load audio files and extract features for each frame
+    background_features, background_labels = load_audio_files_and_extract_features(BACKGROUND_SOUND_DIR, 0, n_mfcc,
+                                                                                   n_fft, hop_length)
+    foreground_features, foreground_labels = load_audio_files_and_extract_features(FOREGROUND_SOUND_DIR, 1, n_mfcc,
+                                                                                   n_fft, hop_length)
 
     # Concatenate the features and labels of both background and foreground sounds
     all_features = np.concatenate((background_features, foreground_features), axis=0)
