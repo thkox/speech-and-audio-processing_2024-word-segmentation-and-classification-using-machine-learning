@@ -23,17 +23,17 @@ def train_svm(features, labels, output_dir=OUTPUT_DIR):
     print("Training SVM classifier")
 
     # Split data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=0)
 
     # Initialize SVM classifier
     # svm_clf = SVC(kernel='linear', random_state=0) -> old code
     svm_clf = LinearSVC(random_state=0)
 
     # Train SVM classifier
-    svm_clf.fit(X_train, y_train)
+    svm_clf.fit(x_train, y_train)
 
     # Predict on test set
-    y_pred = svm_clf.predict(X_test)
+    y_pred = svm_clf.predict(x_test)
 
     # Evaluate performance
     accuracy = accuracy_score(y_test, y_pred)
