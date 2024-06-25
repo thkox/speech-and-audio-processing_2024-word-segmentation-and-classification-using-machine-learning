@@ -28,6 +28,7 @@ def train_mlp(features, labels, output_dir=OUTPUT_DIR):
     mlp_clf = MLPClassifier(hidden_layer_sizes=(100, 50, 25), max_iter=300, random_state=0) # TODO: Change the values
 
     # Train MLP classifier
+    # mlp_clf.fit(validation_split=0.05) TODO: prepare the validation (maybe use early stopping!)
     mlp_clf.fit(X_train, y_train)
 
     # Predict on test set
