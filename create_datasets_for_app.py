@@ -2,7 +2,7 @@ import os
 import shutil
 
 # Define the root directory of the VOiCES dataset
-voices_root_dir = 'files/input/'
+voices_root_dir = 'files/input/VOiCES_devkit'
 
 # Define the directories for the new datasets
 background_sound_dir = 'files/datasets/background_sound'
