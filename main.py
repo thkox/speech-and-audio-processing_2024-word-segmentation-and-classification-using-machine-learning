@@ -2,8 +2,6 @@
 import classifiers.feature_extraction as fe
 import classifiers.model_trainning as mt
 
-output_dir = 'output/'
-
 # Create the datasets that are necessary for the app
 # cda.create_datasets()
 
@@ -12,8 +10,8 @@ mfccs, features, labels = fe.extract_features(shuffle_data=False, show_plots=Fal
 print("Extracted features shape:", features.shape)
 print("Extracted labels shape:", labels.shape)
 
-print("Features:", features)
-print("Labels:", labels)
+# print("Features:", features)
+# print("Labels:", labels)
 
 # Train the classifiers
-mt.train_classifiers(features, labels, output_dir)
+mt.train_classifiers(features, labels)

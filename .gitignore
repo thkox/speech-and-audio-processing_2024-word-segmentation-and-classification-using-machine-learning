@@ -4,3 +4,5 @@
 /files/datasets/test/
 /files/datasets/foreground_sound/
 /files/datasets/background_sound/
+/files/output/svm_model.pkl
+
