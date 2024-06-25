@@ -7,7 +7,7 @@ import os
 OUTPUT_DIR = 'files/output'
 
 
-def train_svm(features, labels, output_dir = OUTPUT_DIR):
+def train_svm(features, labels, output_dir=OUTPUT_DIR):
     """
     Train SVM classifier on extracted features and save the model.
 
@@ -19,6 +19,7 @@ def train_svm(features, labels, output_dir = OUTPUT_DIR):
     Returns:
         SVC: Trained SVM classifier.
     """
+    print("=====================================")
     print("Training SVM classifier")
 
     # Split data into training and test sets
@@ -36,7 +37,7 @@ def train_svm(features, labels, output_dir = OUTPUT_DIR):
 
     # Evaluate performance
     accuracy = accuracy_score(y_test, y_pred)
-    print(f"Accuracy: {accuracy}")
+    print(f"SVM Accuracy: {accuracy}")
 
     # Save the trained model
     model_filename = os.path.join(output_dir, 'svm_model.pkl')
@@ -47,8 +48,22 @@ def train_svm(features, labels, output_dir = OUTPUT_DIR):
     joblib.dump(svm_clf, model_filename)
 
     # Print classification report
-    print("Classification Report:")
+    print("SVM Classification Report:")
     print(classification_report(y_test, y_pred))
 
     print("SVM training completed")
+    print("=====================================")
+    return svm_clf
+
+
+def load_svm_model(output_dir=OUTPUT_DIR):
+    """
+    Load the trained SVM model from the given path.
+
+    Returns:
+        SVC: Loaded SVM classifier.
+    """
+    print("Loading SVM model from", os.path.join(output_dir, 'svm_model.pkl'))
+    svm_clf = joblib.load(os.path.join(output_dir, 'svm_model.pkl'))
+    print("SVM model loaded successfully")
     return svm_clf
