@@ -1,20 +1,19 @@
 # import create_datasets_for_app as cda
 import classifiers.feature_extraction as fe
-# import classifiers.model_trainning as mt
+import classifiers.model_trainning as mt
+
+output_dir = 'output/'
 
 # Create the datasets that are necessary for the app
 # cda.create_datasets()
 
 # Feature extraction of both background and foreground datasets
-features, labels = fe.extract_features()
+mfccs, features, labels = fe.extract_features(shuffle_data=False, show_plots=False)
 print("Extracted features shape:", features.shape)
 print("Extracted labels shape:", labels.shape)
 
-# Loop through each sample and print its features and label
-for i in range(len(features)):
-    print(f"Sample {i + 1}:")
-    print("Features:", features[i])
-    print("Label:", labels[i])
-    print()
+print("Features:", features)
+print("Labels:", labels)
+
 # Train the classifiers
-# mt.train_classifiers()
+mt.train_classifiers(features, labels, output_dir)
