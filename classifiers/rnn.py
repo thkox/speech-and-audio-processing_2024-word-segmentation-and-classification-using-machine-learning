@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import os
 
-OUTPUT_DIR = 'files/output'
+OUTPUT_DIR = 'files/output/classifiers'
 
 
 # TODO: you can remove tensorflow and use keras only
