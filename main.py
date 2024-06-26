@@ -5,19 +5,16 @@ import classifiers.rnn as rnn
 import classifiers.svm as svm
 
 # Create the datasets that are necessary for the app
-cda.create_datasets()
+# cda.create_datasets()
 
 # Feature extraction of both background and foreground datasets
-# mfccs, features, labels = fe.extract_features(shuffle_data=False, show_plots=False) # to create and save the features
+fe.extract_features(shuffle_data=False, show_plots=False) # to create and save the features
 mfccs, features, labels = fe.load_features('files/output/features.npz') # to load the features
 
-print("Extracted features shape:", features.shape)
-print("Extracted labels shape:", labels.shape)
-
 # Train the classifiers
-# svm_model = svm.train(features, labels)
-# mlp_model = mlp.train(features, labels)
-# rnn_model = rnn.train(features, labels)
+svm_model = svm.train(features, labels)
+mlp_model = mlp.train(features, labels)
+rnn_model = rnn.train(features, labels)
 
 
 # Load the trained models
