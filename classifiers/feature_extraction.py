@@ -8,6 +8,8 @@ from sklearn.utils import shuffle
 BACKGROUND_SOUND_DIR = 'files/datasets/background_sound'
 FOREGROUND_SOUND_DIR = 'files/datasets/foreground_sound'
 
+OUTPUT_DIR = 'files/output'
+
 # Define constants for feature extraction parameters
 N_MFCC = 20  # Number of Mel-frequency cepstral coefficients (MFCCs) features to extract
 N_MELS = 96  # Number of Mel bands to generate
@@ -39,7 +41,8 @@ def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=
     mfccs = librosa.feature.mfcc(y=audio_windowed, sr=sample_rate, n_mfcc=n_mfcc, n_fft=n_fft, hop_length=hop_length)
 
     # Extract mel spectrogram
-    mel_spec = librosa.feature.melspectrogram(y=audio_windowed, sr=sample_rate, n_mels=N_MELS, n_fft=n_fft, hop_length=hop_length)
+    mel_spec = librosa.feature.melspectrogram(y=audio_windowed, sr=sample_rate, n_mels=N_MELS, n_fft=n_fft,
+                                              hop_length=hop_length)
     mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)  # Convert to decibel scale
 
     if show_plots:
@@ -54,7 +57,8 @@ def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=
     return mfccs.T, mel_spec_db.T  # Return MFCCs and mel spectrogram for each frame (transposed for convenience)
 
 
-def load_audio_files_and_extract_features(directory, label, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, show_plots=False):
+def load_audio_files_and_extract_features(directory, label, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH,
+                                          show_plots=False):
     """
     Load all audio files in a directory and extract MFCC features and mel spectrogram for each frame.
 
@@ -105,10 +109,12 @@ def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, shuffle_
     print("Starting feature extraction")
 
     # Load audio files and extract features for each frame
-    background_mfccs, background_mel_specs, background_labels = load_audio_files_and_extract_features(BACKGROUND_SOUND_DIR, 0, n_mfcc,
-                                                                                                      n_fft, hop_length, show_plots)
-    foreground_mfccs, foreground_mel_specs, foreground_labels = load_audio_files_and_extract_features(FOREGROUND_SOUND_DIR, 1, n_mfcc,
-                                                                                                      n_fft, hop_length, show_plots)
+    background_mfccs, background_mel_specs, background_labels = load_audio_files_and_extract_features(
+        BACKGROUND_SOUND_DIR, 0, n_mfcc,
+        n_fft, hop_length, show_plots)
+    foreground_mfccs, foreground_mel_specs, foreground_labels = load_audio_files_and_extract_features(
+        FOREGROUND_SOUND_DIR, 1, n_mfcc,
+        n_fft, hop_length, show_plots)
 
     # Concatenate the features and labels of both background and foreground sounds
     all_mfccs = np.concatenate((background_mfccs, foreground_mfccs), axis=0)
@@ -119,5 +125,40 @@ def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, shuffle_
     if shuffle_data:
         all_mfccs, all_mel_specs, all_labels = shuffle(all_mfccs, all_mel_specs, all_labels, random_state=0)
 
+    save_features('files/output/features.npz', all_mfccs, all_mel_specs, all_labels)
     print("Feature extraction completed and saved")
     return all_mfccs, all_mel_specs, all_labels
+
+
+def save_features(features_file, mfccs, mel_specs, labels):
+    """
+    Save MFCC features, mel spectrogram features, and labels to a compressed numpy archive.
+
+    Args:
+        features_file (str): File path to save the features.
+        mfccs (np.ndarray): MFCC features.
+        mel_specs (np.ndarray): Mel spectrogram features.
+        labels (np.ndarray): Labels corresponding to the features.
+    """
+    np.savez(features_file, mfccs=mfccs, mel_specs=mel_specs, labels=labels)
+    print(f"Features saved to {features_file}")
+
+
+def load_features(features_file):
+    """
+    Load MFCC features, mel spectrogram features, and labels from a compressed numpy archive.
+
+    Args:
+        features_file (str): File path to load the features.
+
+    Returns:
+        np.ndarray: Loaded MFCC features.
+        np.ndarray: Loaded mel spectrogram features.
+        np.ndarray: Loaded labels.
+    """
+    loaded_data = np.load(features_file)
+    mfccs = loaded_data['mfccs']
+    mel_specs = loaded_data['mel_specs']
+    labels = loaded_data['labels']
+    print(f"Features loaded from {features_file}")
+    return mfccs, mel_specs, labels
