@@ -107,6 +107,11 @@ def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, shuffle_
         np.ndarray: Corresponding labels.
     """
 
+    # Check if the directories exist
+    if not os.path.isdir(BACKGROUND_SOUND_DIR) or not os.path.isdir(FOREGROUND_SOUND_DIR):
+        print("The directories do not exist. Please create the directories first.")
+        return
+
     # Check if the directories are empty
     if not os.listdir(BACKGROUND_SOUND_DIR) or not os.listdir(FOREGROUND_SOUND_DIR):
         print("The datasets are empty. Please add datasets first.")
