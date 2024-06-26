@@ -1,7 +1,7 @@
 from sklearn.svm import SVC, LinearSVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
-import classifiers.feature_extraction as fe
+from classifiers import feature_extraction as fe
 import joblib
 import os
 
@@ -19,7 +19,10 @@ def train(output_dir=OUTPUT_DIR):
         SVC: Trained SVM classifier.
     """
 
-    _, features, labels = fe.load_features()
+    if fe.load_features() is None:
+        return
+    else:
+        _, features, labels = fe.load_features()
 
     print("=====================================")
     print("Training SVM classifier")
@@ -65,8 +68,12 @@ def load_model(output_dir=OUTPUT_DIR):
     Returns:
         SVC: Loaded SVM classifier.
     """
-    print("Loading SVM model from", os.path.join(output_dir, 'svm_model.pkl'))
-    svm_clf = joblib.load(os.path.join(output_dir, 'svm_model.pkl'))
+    model_path = os.path.join(output_dir, 'svm_model.pkl')
+    if not os.path.isfile(model_path):
+        print("The SVM model does not exist. Please train the model first.")
+        return
+    print("Loading SVM model from", model_path)
+    svm_clf = joblib.load(model_path)
     print("SVM model loaded successfully")
     return svm_clf
 
