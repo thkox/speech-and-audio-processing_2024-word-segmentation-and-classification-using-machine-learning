@@ -1,25 +1,26 @@
 from sklearn.svm import SVC, LinearSVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
+import classifiers.feature_extraction as fe
 import joblib
 import os
 
 OUTPUT_DIR = 'files/output/classifiers'
 
 
-
-def train(features, labels, output_dir=OUTPUT_DIR):
+def train(output_dir=OUTPUT_DIR):
     """
     Train SVM classifier on extracted features and save the model.
 
     Args:
-        features (np.ndarray): Extracted features (MFCCs and mel spectrogram).
-        labels (np.ndarray): Corresponding labels.
         output_dir (str): Directory to save the trained model.
 
     Returns:
         SVC: Trained SVM classifier.
     """
+
+    _, features, labels = fe.load_features()
+
     print("=====================================")
     print("Training SVM classifier")
 
