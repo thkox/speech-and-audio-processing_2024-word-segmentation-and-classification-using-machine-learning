@@ -6,6 +6,7 @@ import os
 
 OUTPUT_DIR = 'files/output'
 
+
 def train_mlp(features, labels, output_dir=OUTPUT_DIR):
     """
     Train MLP classifier on extracted features and save the model.
@@ -22,17 +23,16 @@ def train_mlp(features, labels, output_dir=OUTPUT_DIR):
     print("Training MLP classifier")
 
     # Split data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=0)
 
     # Initialize MLP classifier with three layers
-    mlp_clf = MLPClassifier(hidden_layer_sizes=(100, 50, 25), max_iter=300, random_state=0) # TODO: Change the values
+    mlp_clf = MLPClassifier(hidden_layer_sizes=(100, 50, 25), max_iter=300, random_state=0, early_stopping=True) # TODO Change the values
 
     # Train MLP classifier
-    # mlp_clf.fit(validation_split=0.05) TODO: prepare the validation (maybe use early stopping!)
-    mlp_clf.fit(X_train, y_train)
+    mlp_clf.fit(x_train, y_train)
 
     # Predict on test set
-    y_pred = mlp_clf.predict(X_test)
+    y_pred = mlp_clf.predict(x_test)
 
     # Evaluate performance
     accuracy = accuracy_score(y_test, y_pred)
