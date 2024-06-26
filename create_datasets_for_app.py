@@ -26,6 +26,20 @@ def copy_files(src_dir, dest_dir, condition_func=None):
                     print(f'Skipped: {file} already exists in {dest_dir}')
 
 
+# Condition function for background sounds (rm1 and mic02)
+def background_condition(file):
+    return 'rm1' in file and 'mc02' in file
+
+
+# Condition function for foreground sounds (rm1, train, none, clo)
+def foreground_condition(file):
+    return 'rm1' in file and 'mc01' in file and 'none' in file and 'clo' in file
+
+
+def test_condition(file):
+    return 'rm1' in file and 'mc01' in file and 'clo' in file
+
+
 def create_datasets():
     # Create the new directories if they don't exist
     os.makedirs(background_sound_dir, exist_ok=True)
@@ -34,15 +48,14 @@ def create_datasets():
 
     # Copy background sound files
     background_sound_src_dir = os.path.join(voices_root_dir, 'distant-16k', 'distractors', 'rm1')
-    copy_files(background_sound_src_dir, background_sound_dir)
+    copy_files(background_sound_src_dir, background_sound_dir, background_condition)
 
     # Copy foreground sound files
     foreground_sound_src_dir = os.path.join(voices_root_dir, 'distant-16k', 'speech', 'train', 'rm1', 'none')
-    copy_files(foreground_sound_src_dir, foreground_sound_dir)
+    copy_files(foreground_sound_src_dir, foreground_sound_dir, foreground_condition)
 
     # Copy test dataset files (both background and foreground)
     test_dataset_src_dir = os.path.join(voices_root_dir, 'distant-16k', 'speech', 'test', 'rm1')
-    copy_files(test_dataset_src_dir, test_dataset_dir)
+    copy_files(test_dataset_src_dir, test_dataset_dir, test_condition)
 
     print('File copying completed.')
-
