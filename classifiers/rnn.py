@@ -14,7 +14,7 @@ def train_rnn(features, labels, output_dir=OUTPUT_DIR):
 
     Args:
         features (np.ndarray): Extracted features (time series data).
-        labels (np.ndarray): Corresponding labels.
+        labels (np.ndarray): Corresponding binary labels (0 or 1).
         output_dir (str): Directory to save the trained model.
 
     Returns:
@@ -23,13 +23,11 @@ def train_rnn(features, labels, output_dir=OUTPUT_DIR):
     print("=====================================")
     print("Training RNN classifier")
 
-    # Ensure the labels are in categorical format
-    labels = tf.keras.utils.to_categorical(labels)
-
     # Check if the features array is 2D (samples, features)
     if len(features.shape) == 2:
-        # Reshape to (samples, timesteps, features)
-        features = features.reshape((features.shape[0], features.shape[1], 1))
+        features = features.reshape((features.shape[0], features.shape[1], 1))  # Reshape to 3D (samples, features, 2)
+
+        print("Reshaped features to", features.shape)
     elif len(features.shape) != 3:
         raise ValueError("Features array must be 2D or 3D. Current shape: {}".format(features.shape))
 
@@ -39,31 +37,28 @@ def train_rnn(features, labels, output_dir=OUTPUT_DIR):
     # Initialize RNN model with Input layer
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Input(shape=(X_train.shape[1], X_train.shape[2])))
-    model.add(tf.keras.layers.SimpleRNN(50, activation='relu'))
-    model.add(tf.keras.layers.Dense(labels.shape[1], activation='softmax'))
+    model.add(tf.keras.layers.SimpleRNN(32, activation='relu', return_sequences=True)) # return all h values
+    model.add(tf.keras.layers.Dense(1, activation='sigmoid'))  # Output a single scalar value (0-1)
 
     # Compile the model
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # Train the model
-    model.fit(X_train, y_train, epochs=3, batch_size=32, validation_split=0.2)
-
-    # Evaluate the model
-    loss, accuracy = model.evaluate(X_test, y_test)
-    print(f"RNN Accuracy: {accuracy}")
+    model.fit(X_train, y_train, epochs=30, batch_size=32, validation_split=0.2)
 
     # Save the trained model
     model_filename = os.path.join(output_dir, 'rnn_model.keras')
-
-    # Check if the directory exists, if not, create it
     os.makedirs(os.path.dirname(model_filename), exist_ok=True)
-
     model.save(model_filename)
 
     # Predict on test set for classification report
     y_pred = model.predict(X_test)
-    y_pred_classes = y_pred.argmax(axis=-1)
-    y_test_classes = y_test.argmax(axis=-1)
+    y_pred_classes = (y_pred > 0.5).astype(int).flatten()
+    y_test_classes = y_test.flatten()
+
+    # Evaluate the model
+    loss, accuracy = model.evaluate(X_test, y_test)
+    print(f"RNN Accuracy: {accuracy}")
 
     # Print classification report
     print("RNN Classification Report:")
@@ -81,7 +76,7 @@ def load_rnn_model(output_dir=OUTPUT_DIR):
     Returns:
         Sequential: Loaded RNN classifier.
     """
-    model_filename = os.path.join(output_dir, 'rnn_model.h5')
+    model_filename = os.path.join(output_dir, 'rnn_model.keras')
     print("Loading RNN model from", model_filename)
     model = tf.keras.models.load_model(model_filename)
     print("RNN model loaded successfully")
