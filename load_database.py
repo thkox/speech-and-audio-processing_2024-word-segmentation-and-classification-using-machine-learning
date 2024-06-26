@@ -3,12 +3,12 @@ import shutil
 import wave
 
 # Define the root directory of the VOiCES dataset
-voices_root_dir = 'files/input/VOiCES_devkit'
+VOiCES_SOUNDS_DIR = 'files/input/VOiCES_devkit'
 
 # Define the directories for the new datasets
-background_sound_dir = 'files/datasets/background_sound'
-foreground_sound_dir = 'files/datasets/foreground_sound'
-test_dataset_dir = 'files/datasets/test'
+BACKGROUND_SOUND_DIR = 'files/datasets/background_sound'
+FOREGROUND_SOUND_DIR = 'files/datasets/foreground_sound'
+TEST_SOUND_DIR = 'files/datasets/test'
 
 
 # Function to copy files to the new directory
@@ -75,20 +75,20 @@ def test_condition(file):
 
 def create_datasets():
     # Create the new directories if they don't exist
-    os.makedirs(background_sound_dir, exist_ok=True)
-    os.makedirs(foreground_sound_dir, exist_ok=True)
-    os.makedirs(test_dataset_dir, exist_ok=True)
+    os.makedirs(BACKGROUND_SOUND_DIR, exist_ok=True)
+    os.makedirs(FOREGROUND_SOUND_DIR, exist_ok=True)
+    os.makedirs(TEST_SOUND_DIR, exist_ok=True)
 
     # Copy foreground sound files
-    foreground_sound_src_dir = os.path.join(voices_root_dir, 'distant-16k', 'speech', 'train', 'rm1', 'none')
-    foreground_duration = copy_files(foreground_sound_src_dir, foreground_sound_dir, foreground_condition)
+    foreground_sound_src_dir = os.path.join(VOiCES_SOUNDS_DIR, 'distant-16k', 'speech', 'train', 'rm1', 'none')
+    foreground_duration = copy_files(foreground_sound_src_dir, FOREGROUND_SOUND_DIR, foreground_condition)
 
     # Copy background sound files
-    background_sound_src_dir = os.path.join(voices_root_dir, 'distant-16k', 'distractors', 'rm1')
-    copy_files(background_sound_src_dir, background_sound_dir, background_condition, max_duration=foreground_duration)
+    background_sound_src_dir = os.path.join(VOiCES_SOUNDS_DIR, 'distant-16k', 'distractors', 'rm1')
+    copy_files(background_sound_src_dir, BACKGROUND_SOUND_DIR, background_condition, max_duration=foreground_duration)
 
     # Copy test dataset files (both background and foreground)
-    test_dataset_src_dir = os.path.join(voices_root_dir, 'distant-16k', 'speech', 'test', 'rm1')
-    copy_files(test_dataset_src_dir, test_dataset_dir, test_condition)
+    test_dataset_src_dir = os.path.join(VOiCES_SOUNDS_DIR, 'distant-16k', 'speech', 'test', 'rm1')
+    copy_files(test_dataset_src_dir, TEST_SOUND_DIR, test_condition)
 
     print('File copying completed.')
