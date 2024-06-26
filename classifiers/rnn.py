@@ -6,7 +6,7 @@ OUTPUT_DIR = 'files/output'
 
 
 # TODO: you can remove tensorflow and use keras only
-def train_rnn(features, labels, output_dir=OUTPUT_DIR):
+def train(features, labels, output_dir=OUTPUT_DIR):
     """
     Train RNN classifier on extracted features and save the model.
 
@@ -51,7 +51,7 @@ def train_rnn(features, labels, output_dir=OUTPUT_DIR):
     return model
 
 
-def load_rnn_model(output_dir=OUTPUT_DIR):
+def load_model(output_dir=OUTPUT_DIR):
     """
     Load the trained RNN model from the given path.
 
@@ -65,7 +65,7 @@ def load_rnn_model(output_dir=OUTPUT_DIR):
     return model
 
 
-def predict_with_rnn(model, features):
+def predict(model, features):
     """
     Predict labels for new data using the trained RNN model.
 
