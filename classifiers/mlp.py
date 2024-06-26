@@ -1,7 +1,5 @@
 from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
-import classifiers.feature_extraction as fe
+from classifiers import feature_extraction as fe
 import joblib
 import os
 
@@ -19,7 +17,10 @@ def train(output_dir=OUTPUT_DIR):
         MLPClassifier: Trained MLP classifier.
     """
 
-    _, features, labels = fe.load_features()
+    if fe.load_features() is None:
+        return
+    else:
+        _, features, labels = fe.load_features()
 
     print("=====================================")
     print("Training MLP classifier")
@@ -51,8 +52,12 @@ def load_model(output_dir=OUTPUT_DIR):
     Returns:
         MLPClassifier: Loaded MLP classifier.
     """
-    print("Loading MLP model from", os.path.join(output_dir, 'mlp_model.pkl'))
-    mlp_clf = joblib.load(os.path.join(output_dir, 'mlp_model.pkl'))
+    model_path = os.path.join(output_dir, 'mlp_model.pkl')
+    if not os.path.isfile(model_path):
+        print("The MLP model does not exist. Please train the model first.")
+        return
+    print("Loading MLP model from", model_path)
+    mlp_clf = joblib.load(model_path)
     print("MLP model loaded successfully")
     return mlp_clf
 

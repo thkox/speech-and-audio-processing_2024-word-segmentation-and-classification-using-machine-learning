@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import feature_extraction as fe
+from classifiers import feature_extraction as fe
 import os
 
 OUTPUT_DIR = 'files/output/classifiers'
@@ -18,7 +18,10 @@ def train(output_dir=OUTPUT_DIR):
         Sequential: Trained RNN classifier.
     """
 
-    _, features, labels = fe.load_features()
+    if fe.load_features() is None:
+        return
+    else:
+        _, features, labels = fe.load_features()
 
     print("=====================================")
     print("Training RNN classifier")
@@ -60,11 +63,14 @@ def load_model(output_dir=OUTPUT_DIR):
     Returns:
         Sequential: Loaded RNN classifier.
     """
-    model_filename = os.path.join(output_dir, 'rnn_model.keras')
-    print("Loading RNN model from", model_filename)
-    model = tf.keras.models.load_model(model_filename)
+    model_path = os.path.join(output_dir, 'rnn_model.keras')
+    if not os.path.isfile(model_path):
+        print("The RNN model does not exist. Please train the model first.")
+        return
+    print("Loading RNN model from", model_path)
+    rnn_clf = tf.keras.models.load_model(model_path)
     print("RNN model loaded successfully")
-    return model
+    return rnn_clf
 
 
 def predict(model, features):
