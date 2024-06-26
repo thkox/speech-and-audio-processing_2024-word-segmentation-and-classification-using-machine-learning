@@ -22,21 +22,11 @@ def train_mlp(features, labels, output_dir=OUTPUT_DIR):
     print("=====================================")
     print("Training MLP classifier")
 
-    # Split data into training and test sets
-    x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=0)
-
     # Initialize MLP classifier with three layers
     mlp_clf = MLPClassifier(hidden_layer_sizes=(100, 50, 25), max_iter=300, random_state=0, early_stopping=True) # TODO Change the values
 
     # Train MLP classifier
-    mlp_clf.fit(x_train, y_train)
-
-    # Predict on test set
-    y_pred = mlp_clf.predict(x_test)
-
-    # Evaluate performance
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f"MLP Accuracy: {accuracy}")
+    mlp_clf.fit(features, labels)
 
     # Save the trained model
     model_filename = os.path.join(output_dir, 'mlp_model.pkl')
@@ -45,10 +35,6 @@ def train_mlp(features, labels, output_dir=OUTPUT_DIR):
     os.makedirs(os.path.dirname(model_filename), exist_ok=True)
 
     joblib.dump(mlp_clf, model_filename)
-
-    # Print classification report
-    print("MLP Classification Report:")
-    print(classification_report(y_test, y_pred))
 
     print("MLP training completed")
     print("=====================================")
