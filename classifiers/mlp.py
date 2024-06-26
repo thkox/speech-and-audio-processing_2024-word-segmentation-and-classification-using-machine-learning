@@ -4,7 +4,7 @@ from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import os
 
-OUTPUT_DIR = 'files/output'
+OUTPUT_DIR = 'files/output/classifiers'
 
 
 def train(features, labels, output_dir=OUTPUT_DIR):
