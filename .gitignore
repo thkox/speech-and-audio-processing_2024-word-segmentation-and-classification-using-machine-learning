@@ -6,3 +6,5 @@
 
 /files/output/mlp_model.pkl
 /testing/
+/files/output/features.npz
+/files/output/rnn_model.keras
