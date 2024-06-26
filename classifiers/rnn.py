@@ -1,7 +1,5 @@
 import numpy as np
 import tensorflow as tf
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
 import os
 
 OUTPUT_DIR = 'files/output'
@@ -33,14 +31,15 @@ def train_rnn(features, labels, output_dir=OUTPUT_DIR):
     # Initialize RNN model
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Input(shape=(features.shape[1], features.shape[2])))  # Input layer based on features shape
-    model.add(tf.keras.layers.SimpleRNN(10, activation='relu', return_sequences=True))
+    model.add(tf.keras.layers.SimpleRNN(32, activation='relu', return_sequences=True))
+    model.add(tf.keras.layers.Flatten())  # Flatten the 3D output to 1D
     model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
 
     # Compile the model
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # Train the model
-    model.fit(features, labels, epochs=30, batch_size=32, validation_split=0.2)
+    model.fit(features, labels, epochs=10, batch_size=32, validation_split=0.2)
 
     # Save the trained model
     model_filename = os.path.join(output_dir, 'rnn_model.keras')
