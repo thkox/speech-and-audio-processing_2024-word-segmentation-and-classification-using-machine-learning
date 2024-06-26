@@ -1,23 +1,25 @@
 import numpy as np
 import tensorflow as tf
+import feature_extraction as fe
 import os
 
 OUTPUT_DIR = 'files/output/classifiers'
 
 
 # TODO: you can remove tensorflow and use keras only
-def train(features, labels, output_dir=OUTPUT_DIR):
+def train(output_dir=OUTPUT_DIR):
     """
     Train RNN classifier on extracted features and save the model.
 
     Args:
-        features (np.ndarray): Extracted features (time series data).
-        labels (np.ndarray): Corresponding binary labels (0 or 1).
         output_dir (str): Directory to save the trained model.
 
     Returns:
         Sequential: Trained RNN classifier.
     """
+
+    _, features, labels = fe.load_features()
+
     print("=====================================")
     print("Training RNN classifier")
 
