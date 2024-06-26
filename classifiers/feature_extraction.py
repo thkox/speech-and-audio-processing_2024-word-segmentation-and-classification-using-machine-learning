@@ -8,6 +8,8 @@ from sklearn.utils import shuffle
 BACKGROUND_SOUND_DIR = 'files/datasets/background_sound'
 FOREGROUND_SOUND_DIR = 'files/datasets/foreground_sound'
 
+FEATURES_FILE = 'files/output/features.npz'
+
 OUTPUT_DIR = 'files/output'
 
 # Define constants for feature extraction parameters
@@ -155,7 +157,7 @@ def save_features(features_file, mfccs, mel_specs, labels):
     print(f"Features saved to {features_file}")
 
 
-def load_features(features_file):
+def load_features(features_file=FEATURES_FILE):
     """
     Load MFCC features, mel spectrogram features, and labels from a compressed numpy archive.
 
@@ -167,9 +169,20 @@ def load_features(features_file):
         np.ndarray: Loaded mel spectrogram features.
         np.ndarray: Loaded labels.
     """
-    loaded_data = np.load(features_file)
-    mfccs = loaded_data['mfccs']
-    mel_specs = loaded_data['mel_specs']
-    labels = loaded_data['labels']
-    print(f"Features loaded from {features_file}")
-    return mfccs, mel_specs, labels
+
+    # Check if the directory exists
+    if not os.path.isdir(os.path.dirname(FEATURES_FILE)):
+        print(f"The directory {os.path.dirname(FEATURES_FILE)} does not exist. Please create the directory first.")
+        return
+    else:
+        # Check if the file exists
+        if not os.path.isfile(FEATURES_FILE):
+            print(f"The file {FEATURES_FILE} does not exist. Please extract features first from dataset.")
+            return
+        else:
+            loaded_data = np.load(features_file)
+            mfccs = loaded_data['mfccs']
+            mel_specs = loaded_data['mel_specs']
+            labels = loaded_data['labels']
+            print(f"Features loaded from {features_file}")
+            return mfccs, mel_specs, labels
