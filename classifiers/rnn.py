@@ -25,44 +25,27 @@ def train_rnn(features, labels, output_dir=OUTPUT_DIR):
 
     # Check if the features array is 2D (samples, features)
     if len(features.shape) == 2:
-        features = features.reshape((features.shape[0], features.shape[1], 1))  # Reshape to 3D (samples, features, 2)
-
+        features = features.reshape((features.shape[0], features.shape[1], 1))  # Reshape to 3D (samples, features, 1)
         print("Reshaped features to", features.shape)
     elif len(features.shape) != 3:
         raise ValueError("Features array must be 2D or 3D. Current shape: {}".format(features.shape))
 
-    # Split data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=0)
-
-    # Initialize RNN model with Input layer
+    # Initialize RNN model
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Input(shape=(X_train.shape[1], X_train.shape[2])))
-    model.add(tf.keras.layers.SimpleRNN(32, activation='relu', return_sequences=True)) # return all h values
-    model.add(tf.keras.layers.Dense(1, activation='sigmoid'))  # Output a single scalar value (0-1)
+    model.add(tf.keras.layers.Input(shape=(features.shape[1], features.shape[2])))  # Input layer based on features shape
+    model.add(tf.keras.layers.SimpleRNN(32, activation='relu', return_sequences=False))
+    model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
 
     # Compile the model
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # Train the model
-    model.fit(X_train, y_train, epochs=30, batch_size=32, validation_split=0.2)
+    model.fit(features, labels, epochs=30, batch_size=32, validation_split=0.2)
 
     # Save the trained model
     model_filename = os.path.join(output_dir, 'rnn_model.keras')
     os.makedirs(os.path.dirname(model_filename), exist_ok=True)
     model.save(model_filename)
-
-    # Predict on test set for classification report
-    y_pred = model.predict(X_test)
-    y_pred_classes = (y_pred > 0.5).astype(int).flatten()
-    y_test_classes = y_test.flatten()
-
-    # Evaluate the model
-    loss, accuracy = model.evaluate(X_test, y_test)
-    print(f"RNN Accuracy: {accuracy}")
-
-    # Print classification report
-    print("RNN Classification Report:")
-    print(classification_report(y_test_classes, y_pred_classes))
 
     print("RNN training completed")
     print("=====================================")
