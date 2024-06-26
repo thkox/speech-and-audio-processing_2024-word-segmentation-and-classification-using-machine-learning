@@ -19,7 +19,7 @@ N_FFT = 400  # FFT window size
 HOP_LENGTH = 200  # Number of samples between successive frames
 
 
-def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, show_plots=False):
+def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, show_plots=False): # TODO will need to use in predictions
     """
     Load an audio file and extract MFCC features and mel spectrogram for each frame.
 
