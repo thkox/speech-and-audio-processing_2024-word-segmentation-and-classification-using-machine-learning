@@ -7,7 +7,7 @@ import os
 OUTPUT_DIR = 'files/output'
 
 
-def train_svm(features, labels, output_dir=OUTPUT_DIR):
+def train(features, labels, output_dir=OUTPUT_DIR):
     """
     Train SVM classifier on extracted features and save the model.
 
@@ -56,7 +56,7 @@ def train_svm(features, labels, output_dir=OUTPUT_DIR):
     return svm_clf
 
 
-def load_svm_model(output_dir=OUTPUT_DIR):
+def load_model(output_dir=OUTPUT_DIR):
     """
     Load the trained SVM model from the given path.
 
@@ -67,3 +67,10 @@ def load_svm_model(output_dir=OUTPUT_DIR):
     svm_clf = joblib.load(os.path.join(output_dir, 'svm_model.pkl'))
     print("SVM model loaded successfully")
     return svm_clf
+
+
+def predict(model, features):
+    """
+    Predict the labels of given features using the trained SVM model.
+    """
+    return model.predict(features)

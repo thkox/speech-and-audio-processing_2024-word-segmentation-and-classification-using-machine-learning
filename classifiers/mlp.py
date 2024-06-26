@@ -7,7 +7,7 @@ import os
 OUTPUT_DIR = 'files/output'
 
 
-def train_mlp(features, labels, output_dir=OUTPUT_DIR):
+def train(features, labels, output_dir=OUTPUT_DIR):
     """
     Train MLP classifier on extracted features and save the model.
 
@@ -23,7 +23,8 @@ def train_mlp(features, labels, output_dir=OUTPUT_DIR):
     print("Training MLP classifier")
 
     # Initialize MLP classifier with three layers
-    mlp_clf = MLPClassifier(hidden_layer_sizes=(100, 50, 25), max_iter=300, random_state=0, early_stopping=True) # TODO Change the values
+    mlp_clf = MLPClassifier(hidden_layer_sizes=(100, 50, 25), max_iter=300, random_state=0,
+                            early_stopping=True)  # TODO Change the values
 
     # Train MLP classifier
     mlp_clf.fit(features, labels)
@@ -41,7 +42,7 @@ def train_mlp(features, labels, output_dir=OUTPUT_DIR):
     return mlp_clf
 
 
-def load_mlp_model(output_dir=OUTPUT_DIR):
+def load_model(output_dir=OUTPUT_DIR):
     """
     Load the trained MLP model from the given path.
 
@@ -52,3 +53,17 @@ def load_mlp_model(output_dir=OUTPUT_DIR):
     mlp_clf = joblib.load(os.path.join(output_dir, 'mlp_model.pkl'))
     print("MLP model loaded successfully")
     return mlp_clf
+
+
+def predict(model, features):
+    """
+    Predict the labels of given features using the trained MLP model.
+
+    Args:
+        model (MLPClassifier): Trained MLP classifier.
+        features (np.ndarray): Features to predict the labels.
+
+    Returns:
+        np.ndarray: Predicted labels.
+    """
+    return model.predict(features)
