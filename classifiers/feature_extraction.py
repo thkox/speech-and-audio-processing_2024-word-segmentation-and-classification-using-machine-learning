@@ -56,7 +56,7 @@ def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=
         plt.tight_layout()
         plt.show()
 
-    return mfccs.T, mel_spec_db.T  # Return MFCCs and mel spectrogram for each frame (transposed for convenience)
+    return mfccs.T, mel_spec_db.T, sample_rate, audio  # Return MFCCs, mel spectrogram, sample_rate and audio for each frame (transposed for convenience)
 
 
 def load_audio_files_and_extract_features(directory, label, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH,
@@ -84,7 +84,7 @@ def load_audio_files_and_extract_features(directory, label, n_mfcc=N_MFCC, n_fft
     for file_name in os.listdir(directory):
         if file_name.endswith('.wav'):
             file_path = os.path.join(directory, file_name)
-            mfccs, mel_spec = load_and_extract_features(file_path, n_mfcc, n_fft, hop_length, show_plots)
+            mfccs, mel_spec, _, _ = load_and_extract_features(file_path, n_mfcc, n_fft, hop_length, show_plots)
             all_mfccs.append(mfccs)
             all_mel_specs.append(mel_spec)
             labels = np.full(mfccs.shape[0], label)
