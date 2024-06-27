@@ -21,10 +21,25 @@ HOP_LENGTH = 200  # Number of samples between successive frames
 
 
 def detect_voice_intervals(predictions, frame_rate, min_length=1):
+    """
+    Detect intervals of voice activity from predictions.
+
+    Args:
+        predictions (np.ndarray): Array of predicted labels (0 or 1).
+        frame_rate (float): The frame rate of the predictions.
+        min_length (int): Minimum length of an interval to be considered as voice activity.
+
+    Returns:
+        list: List of tuples indicating the start and end times of detected voice intervals.
+    """
+    # Ensure predictions is a 1D array
+    if predictions.ndim > 1:
+        predictions = predictions.flatten()
+
     intervals = []
     in_foreground = False
     start_time = 0
-    length = 1
+    length = 0  # Initialize length to 0
 
     for i, label in enumerate(predictions):
         if label == 1:
@@ -37,7 +52,7 @@ def detect_voice_intervals(predictions, frame_rate, min_length=1):
                 end_time = i / frame_rate
                 intervals.append((start_time, end_time))
             in_foreground = False
-            length = 0
+            length = 0  # Reset length to 0
 
     if in_foreground and length >= min_length:
         end_time = len(predictions) / frame_rate
@@ -47,6 +62,7 @@ def detect_voice_intervals(predictions, frame_rate, min_length=1):
         print(f"Voice from {interval[0]:.4f} sec to {interval[1]:.4f} sec")
 
     return intervals
+
 
 
 def plot_audio_with_intervals(audio, sample_rate, intervals):
@@ -174,7 +190,8 @@ def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, shuffle_
         FOREGROUND_SOUND_DIR, 1, n_mfcc,
         n_fft, hop_length, show_plots)
 
-    # check if the background_mel_specs is the same length as the foreground_mel_specs, if not then remove the features from the ndarray thatis longer
+    # check if the background_mel_specs is the same length as the foreground_mel_specs, if not then remove the
+    # features from the ndarray that is longer
     if len(background_mel_specs) > len(foreground_mel_specs):
         background_mel_specs = background_mel_specs[:len(foreground_mel_specs)]
         background_mfccs = background_mfccs[:len(foreground_mel_specs)]
@@ -183,6 +200,17 @@ def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, shuffle_
         foreground_mel_specs = foreground_mel_specs[:len(background_mel_specs)]
         foreground_mfccs = foreground_mfccs[:len(background_mel_specs)]
         foreground_labels = foreground_labels[:len(background_mel_specs)]
+
+    # Ensure the final number of background_mel_specs and foreground_mel_specs is divisible by 2
+    if len(background_mel_specs) % 2 != 0:
+        background_mel_specs = background_mel_specs[:-1]
+        background_mfccs = background_mfccs[:-1]
+        background_labels = background_labels[:-1]
+
+    if len(foreground_mel_specs) % 2 != 0:
+        foreground_mel_specs = foreground_mel_specs[:-1]
+        foreground_mfccs = foreground_mfccs[:-1]
+        foreground_labels = foreground_labels[:-1]
 
     # Concatenate the features and labels of both background and foreground sounds
     all_mfccs = np.concatenate((background_mfccs, foreground_mfccs), axis=0)
