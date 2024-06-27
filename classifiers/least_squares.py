@@ -87,4 +87,8 @@ def predict(features):
     # Convert predictions to 0 and 1
     binary_predictions = np.where(predictions == -1, 0, 1)
 
+    # Reshape the predictions to (number of labels,)
+    binary_predictions = binary_predictions.ravel()
+
     return binary_predictions
+
