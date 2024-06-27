@@ -8,3 +8,4 @@
 /testing/
 /files/output/features.npz
 /files/output/classifiers/rnn_model.keras
+/files/output/classifiers/ls_model.pkl

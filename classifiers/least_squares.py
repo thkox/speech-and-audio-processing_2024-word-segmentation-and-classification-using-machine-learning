@@ -8,6 +8,7 @@ import numpy as np
 
 OUTPUT_DIR = 'files/output/classifiers'
 
+
 def train(output_dir=OUTPUT_DIR):
     """
     Train Least Squares classifier on extracted features and save the model.
@@ -65,7 +66,7 @@ def load_model(output_dir=OUTPUT_DIR):
     return weights
 
 
-def predict(model, features):
+def predict(features):
     """
     Predict the labels of given features using the trained Least Squares model.
 
@@ -81,7 +82,7 @@ def predict(model, features):
     features = np.column_stack([np.ones(len(features)), features])
 
     # Compute predictions
-    predictions = np.sign(features @ model)  # Matrix multiplication and sign function
+    predictions = np.sign(features @ load_model())  # Matrix multiplication and sign function
 
     # Convert predictions to 0 and 1
     binary_predictions = np.where(predictions == -1, 0, 1)

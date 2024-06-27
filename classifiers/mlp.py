@@ -62,7 +62,7 @@ def load_model(output_dir=OUTPUT_DIR):
     return mlp_clf
 
 
-def predict(model, features):
+def predict(features):
     """
     Predict the labels of given features using the trained MLP model.
 
@@ -73,4 +73,4 @@ def predict(model, features):
     Returns:
         np.ndarray: Predicted labels.
     """
-    return model.predict(features)
+    return load_model().predict(features)
