@@ -3,6 +3,7 @@ import numpy as np
 import librosa
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
+import webrtcvad
 
 # Define the directories for the datasets
 BACKGROUND_SOUND_DIR = 'files/datasets/background_sound'
