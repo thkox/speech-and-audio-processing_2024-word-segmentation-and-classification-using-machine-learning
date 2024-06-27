@@ -19,7 +19,51 @@ N_FFT = 400  # FFT window size
 HOP_LENGTH = 200  # Number of samples between successive frames
 
 
-def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, show_plots=False): # TODO will need to use in predictions
+def detect_voice_intervals(predictions, frame_rate, min_length=1):
+    intervals = []
+    in_foreground = False
+    start_time = 0
+    length = 1
+
+    for i, label in enumerate(predictions):
+        if label == 1:
+            if not in_foreground:
+                in_foreground = True
+                start_time = i / frame_rate
+            length += 1
+        else:
+            if in_foreground and length >= min_length:
+                end_time = i / frame_rate
+                intervals.append((start_time, end_time))
+            in_foreground = False
+            length = 0
+
+    if in_foreground and length >= min_length:
+        end_time = len(predictions) / frame_rate
+        intervals.append((start_time, end_time))
+
+    for interval in intervals:
+        print(f"Voice from {interval[0]:.4f} sec to {interval[1]:.4f} sec")
+
+    return intervals
+
+
+def plot_audio_with_intervals(audio, sample_rate, intervals):
+    times = np.arange(len(audio)) / sample_rate
+    plt.figure(figsize=(15, 6))
+    plt.plot(times, audio, label="Audio waveform")
+    for interval in intervals:
+        plt.axvspan(interval[0], interval[1], color='red', alpha=0.3,
+                    label="Detected voice interval" if interval == intervals[0] else "")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Amplitude")
+    plt.title("Audio waveform with detected voice intervals")
+    plt.legend()
+    plt.show()
+
+
+def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH,
+                              show_plots=False):  # TODO will need to use in predictions
     """
     Load an audio file and extract MFCC features and mel spectrogram for each frame.
 
