@@ -36,7 +36,7 @@ def train(output_dir=OUTPUT_DIR):
     # Initialize RNN model
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Input(shape=(features.shape[1], features.shape[2])))  # Input layer based on features shape
-    model.add(tf.keras.layers.SimpleRNN(32, activation='relu', return_sequences=True))
+    model.add(tf.keras.layers.SimpleRNN(32, activation='sigmoid', return_sequences=True))
     model.add(tf.keras.layers.Flatten())  # Flatten the 3D output to 1D
     model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
 
