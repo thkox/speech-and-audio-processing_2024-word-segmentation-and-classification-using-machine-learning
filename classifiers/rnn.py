@@ -73,7 +73,7 @@ def load_model(output_dir=OUTPUT_DIR):
     return rnn_clf
 
 
-def predict(model, features):
+def predict(features):
     """
     Predict labels for new data using the trained RNN model.
 
@@ -89,5 +89,5 @@ def predict(model, features):
         features = features.reshape((features.shape[0], features.shape[1], 1))
     elif len(features.shape) != 3:
         raise ValueError("Features array must be 2D or 3D. Current shape: {}".format(features.shape))
-    predictions = model.predict(features)
+    predictions = load_model().predict(features)
     return predictions.argmax(axis=-1)

@@ -78,8 +78,8 @@ def load_model(output_dir=OUTPUT_DIR):
     return svm_clf
 
 
-def predict(model, features):
+def predict(features):
     """
     Predict the labels of given features using the trained SVM model.
     """
-    return model.predict(features)
+    return load_model().predict(features)
