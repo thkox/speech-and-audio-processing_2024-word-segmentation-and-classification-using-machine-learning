@@ -174,6 +174,16 @@ def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, shuffle_
         FOREGROUND_SOUND_DIR, 1, n_mfcc,
         n_fft, hop_length, show_plots)
 
+    # check if the background_mel_specs is the same length as the foreground_mel_specs, if not then remove the features from the ndarray thatis longer
+    if len(background_mel_specs) > len(foreground_mel_specs):
+        background_mel_specs = background_mel_specs[:len(foreground_mel_specs)]
+        background_mfccs = background_mfccs[:len(foreground_mel_specs)]
+        background_labels = background_labels[:len(foreground_mel_specs)]
+    elif len(background_mel_specs) < len(foreground_mel_specs):
+        foreground_mel_specs = foreground_mel_specs[:len(background_mel_specs)]
+        foreground_mfccs = foreground_mfccs[:len(background_mel_specs)]
+        foreground_labels = foreground_labels[:len(background_mel_specs)]
+
     # Concatenate the features and labels of both background and foreground sounds
     all_mfccs = np.concatenate((background_mfccs, foreground_mfccs), axis=0)
     all_mel_specs = np.concatenate((background_mel_specs, foreground_mel_specs), axis=0)
