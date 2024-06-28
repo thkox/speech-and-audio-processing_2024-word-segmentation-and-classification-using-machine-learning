@@ -6,7 +6,27 @@ import os
 OUTPUT_DIR = 'files/output/classifiers'
 
 
-def preprocess_features(features, labels, n_of_files=548):
+def get_divisor(n, k):
+    divisors = []
+
+    # Find all divisors of n
+    for i in range(1, int(n ** 0.5) + 1):
+        if n % i == 0:
+            divisors.append(i)
+            if i != n // i:
+                divisors.append(n // i)
+
+    # Sort divisors in ascending order
+    divisors.sort()
+
+    # Check if there are at least 4 divisors
+    if len(divisors) >= 5:
+        return divisors[k]  # 4th divisor (index 3 in 0-based indexing)
+    else:
+        return None  # Not enough divisors (should handle this case as needed)
+
+
+def preprocess_features(features, labels, n_of_files=1):
     """
     Preprocess features and labels to match the required input shape for the RNN model.
 
@@ -19,9 +39,6 @@ def preprocess_features(features, labels, n_of_files=548):
         np.ndarray, np.ndarray: Preprocessed features and labels.
     """
     timesteps, n_mels = features.shape
-    print("n_mels:", n_mels)
-    print("timesteps:", timesteps)
-    assert timesteps % n_of_files == 0, "Total timesteps must be divisible by n_of_files"
 
     # Reshape features and labels to fit the model input shape
     # First reshape to split into files
@@ -31,7 +48,6 @@ def preprocess_features(features, labels, n_of_files=548):
     labels = labels.reshape((n_of_files, timesteps // n_of_files))  # Ensuring labels match feature shapes
 
     return features, labels
-
 
 
 def train(output_dir=OUTPUT_DIR):
@@ -54,11 +70,16 @@ def train(output_dir=OUTPUT_DIR):
     print("Training RNN classifier")
 
     # Preprocess features and labels
-    features, labels = preprocess_features(features, labels)
+    # find the 4th divisor of the timesteps
+
+    timesteps, n_mels = features.shape
+    n_of_files = get_divisor(timesteps, 21)
+    features, labels = preprocess_features(features, labels, n_of_files)
 
     # Initialize RNN model
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Input(shape=(features.shape[1], features.shape[2])))  # Input layer based on features shape
+    model.add(
+        tf.keras.layers.Input(shape=(features.shape[1], features.shape[2])))  # Input layer based on features shape
     model.add(tf.keras.layers.SimpleRNN(32, activation='sigmoid', return_sequences=True))  # Change here
     model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
 
@@ -66,7 +87,7 @@ def train(output_dir=OUTPUT_DIR):
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # Train the model
-    model.fit(features, labels, epochs=10, batch_size=32, validation_split=0.2)
+    model.fit(features, labels, epochs=40, batch_size=32, validation_split=0.2)
 
     # Save the trained model
     model_filename = os.path.join(output_dir, 'rnn_model.keras')
@@ -95,7 +116,7 @@ def load_model(output_dir=OUTPUT_DIR):
     return rnn_clf
 
 
-def predict(features):
+def predict(features, n_of_files=1):
     """
     Predict labels for new data using the trained RNN model.
 
@@ -105,8 +126,7 @@ def predict(features):
     Returns:
         np.ndarray: Predicted labels.
     """
-    features, _ = preprocess_features(features, np.zeros((features.shape[0],)), n_of_files=1)
+    features, _ = preprocess_features(features, np.zeros((features.shape[0],)), n_of_files)
     rnn_model = load_model()
     predictions = rnn_model.predict(features)
     return (predictions > 0.5).astype(int)  # Assuming binary classification
-
