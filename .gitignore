@@ -1,6 +1,11 @@
-/files/input/distant-16k/
-/files/input/references/
-/files/input/source-16k/
+/files/input/VOiCES_devkit/
 /files/datasets/test/
 /files/datasets/foreground_sound/
 /files/datasets/background_sound/
+/files/output/classifiers/svm_model.pkl
+
+/files/output/classifiers/mlp_model.pkl
+/testing/
+/files/output/features.npz
+/files/output/classifiers/rnn_model.keras
+/files/output/classifiers/ls_model.pkl
