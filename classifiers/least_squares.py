@@ -1,6 +1,5 @@
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
 from classifiers import feature_extraction as fe
 import joblib
 import os
@@ -22,22 +21,25 @@ def train(output_dir=OUTPUT_DIR):
     # Convert labels to -1 and 1
     labels = np.where(labels == 0, -1, 1)
 
+    # Split the data into training and validation sets
+    features_train, features_val, labels_train, labels_val = train_test_split(features, labels, test_size=0.1, random_state=42)
+
     print("=====================================")
     print("Training Least Squares classifier")
 
     # Ensure features and labels are 2D tensors
-    features = tf.constant(features, dtype=tf.float32)
-    if features.shape.rank == 1:
-        features = tf.expand_dims(features, axis=-1)  # Make it a column vector
-    labels = tf.constant(labels, dtype=tf.float32)
-    if labels.shape.rank == 1:
-        labels = tf.expand_dims(labels, axis=-1)  # Make it a column vector
+    features_train = tf.constant(features_train, dtype=tf.float32)
+    if features_train.shape.rank == 1:
+        features_train = tf.expand_dims(features_train, axis=-1)  # Make it a column vector
+    labels_train = tf.constant(labels_train, dtype=tf.float32)
+    if labels_train.shape.rank == 1:
+        labels_train = tf.expand_dims(labels_train, axis=-1)  # Make it a column vector
 
     # Add bias term to features
-    features = tf.concat([tf.ones((features.shape[0], 1), dtype=tf.float32), features], axis=1)
+    features_train = tf.concat([tf.ones((features_train.shape[0], 1), dtype=tf.float32), features_train], axis=1)
 
     # Use tf.linalg.lstsq to solve for weights
-    weights = tf.linalg.lstsq(features, labels, fast=False)
+    weights = tf.linalg.lstsq(features_train, labels_train, fast=False)
 
     # Save the trained weights
     model_filename = os.path.join(output_dir, 'ls_model.pkl')
@@ -46,6 +48,25 @@ def train(output_dir=OUTPUT_DIR):
 
     print("Least Squares training completed")
     print("=====================================")
+
+    # Validate the model on the validation set
+    features_val = tf.constant(features_val, dtype=tf.float32)
+    if features_val.shape.rank == 1:
+        features_val = tf.expand_dims(features_val, axis=-1)  # Make it a column vector
+    labels_val = tf.constant(labels_val, dtype=tf.float32)
+    if labels_val.shape.rank == 1:
+        labels_val = tf.expand_dims(labels_val, axis=-1)  # Make it a column vector
+
+    # Add bias term to features
+    features_val = tf.concat([tf.ones((features_val.shape[0], 1), dtype=tf.float32), features_val], axis=1)
+
+    # Compute predictions on the validation set
+    predictions_val = np.sign(features_val @ weights)
+
+    # Compute accuracy on the validation set
+    accuracy_val = np.mean(predictions_val.numpy() == labels_val.numpy())
+    print("Validation accuracy:", accuracy_val)
+
     return weights.numpy()
 
 
