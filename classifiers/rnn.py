@@ -73,7 +73,7 @@ def train(output_dir=OUTPUT_DIR):
     # find the 4th divisor of the timesteps
 
     timesteps, n_mels = features.shape
-    n_of_files = get_divisor(timesteps, 5)
+    n_of_files = get_divisor(timesteps, 11)
     features, labels = preprocess_features(features, labels, n_of_files)
 
     # Initialize RNN model
@@ -87,7 +87,7 @@ def train(output_dir=OUTPUT_DIR):
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # Train the model
-    model.fit(features, labels, epochs=40, batch_size=32, validation_split=0.2)
+    model.fit(features, labels, epochs=40, batch_size=32, validation_split=0.1)
 
     # Save the trained model
     model_filename = os.path.join(output_dir, 'rnn_model.keras')

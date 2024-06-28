@@ -28,7 +28,7 @@ def train(output_dir=OUTPUT_DIR):
     print("Training SVM classifier")
 
     # Split data into training and test sets
-    x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.1, random_state=0)
 
     # Initialize SVM classifier
     # svm_clf = SVC(kernel='linear', random_state=0) -> old code
