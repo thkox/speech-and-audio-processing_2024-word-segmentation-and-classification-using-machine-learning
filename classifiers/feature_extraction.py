@@ -16,8 +16,8 @@ OUTPUT_DIR = 'files/output'
 # Define constants for feature extraction parameters
 N_MFCC = 20  # Number of Mel-frequency cepstral coefficients (MFCCs) features to extract
 N_MELS = 96  # Number of Mel bands to generate
-N_FFT = 400  # FFT window size
-HOP_LENGTH = 200  # Number of samples between successive frames
+N_FFT = 512  # FFT window size
+HOP_LENGTH = 256  # Number of samples between successive frames
 
 
 def detect_voice_intervals(predictions, frame_rate, min_length=1):
@@ -64,8 +64,7 @@ def detect_voice_intervals(predictions, frame_rate, min_length=1):
     return intervals
 
 
-
-def plot_audio_with_intervals(audio, sample_rate, intervals):
+def plot_audio_with_intervals(audio, sample_rate, intervals, title="Model"):
     times = np.arange(len(audio)) / sample_rate
     plt.figure(figsize=(15, 6))
     plt.plot(times, audio, label="Audio waveform")
@@ -74,7 +73,7 @@ def plot_audio_with_intervals(audio, sample_rate, intervals):
                     label="Detected voice interval" if interval == intervals[0] else "")
     plt.xlabel("Time (s)")
     plt.ylabel("Amplitude")
-    plt.title("Audio waveform with detected voice intervals")
+    plt.title("Audio waveform with detected voice intervals " + title)
     plt.legend()
     plt.show()
 
