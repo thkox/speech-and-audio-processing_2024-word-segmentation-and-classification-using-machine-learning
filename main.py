@@ -5,17 +5,17 @@ import os
 from scipy.ndimage import median_filter
 from classifiers import mlp, rnn, svm, least_squares as ls
 
-# # Create the datasets that are necessary for the app
-# cda.create_datasets()
-#
-# # Feature extraction of both background and foreground datasets
-# fe.extract_features(shuffle_data=True, show_plots=False)  # to create and save the features
-#
-# # Train the classifiers
-# svm.train()
-# mlp.train()
-# rnn.train()
-# ls.train()
+# Create the datasets that are necessary for the app
+cda.create_datasets()
+
+# Feature extraction of both background and foreground datasets
+fe.extract_features(shuffle_data=True, show_plots=False)  # to create and save the features
+
+# Train the classifiers
+svm.train()
+mlp.train()
+rnn.train()
+ls.train()
 
 # Load the trained models
 svm_model = svm.load_model()
