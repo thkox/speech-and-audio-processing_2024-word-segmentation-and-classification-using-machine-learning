@@ -1,3 +1,4 @@
+import io
 import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
@@ -22,8 +23,8 @@ def transcribe_audio(file_path):
     # Load your audio file
     audio = AudioSegment.from_file(file_path)
 
-    # Split audio where silence is longer than 100ms and get chunks
-    chunks = split_on_silence(audio, min_silence_len=200, silence_thresh=-40)
+    # Split audio where silence is longer than 400ms and get chunks
+    chunks = split_on_silence(audio, min_silence_len=400, silence_thresh=-40)
 
     # Store intervals and their text
     intervals = []
@@ -47,17 +48,9 @@ def transcribe_audio(file_path):
                 intervals.append((start_time, end_time))
                 texts.append(text)
             except sr.UnknownValueError:
-                print(f"Chunk {i}: Could not understand audio")
-                start_time = sum(len(chunks[j]) for j in range(i)) / 1000.0  # in seconds
-                end_time = start_time + len(chunk) / 1000.0  # in seconds
-                intervals.append((start_time, end_time))
-                texts.append("")
+                pass
             except sr.RequestError as e:
-                print(f"Chunk {i}: Could not request results; {e}")
-                start_time = sum(len(chunks[j]) for j in range(i)) / 1000.0  # in seconds
-                end_time = start_time + len(chunk) / 1000.0  # in seconds
-                intervals.append((start_time, end_time))
-                texts.append("")
+                pass
 
     return intervals, texts
 

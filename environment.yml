@@ -9,3 +9,5 @@ dependencies:
   - librosa=0.10.*
   - pandas
   - inquirer
+  - speechrecognition
+  - pydub
