@@ -55,33 +55,69 @@ def transcribe_audio(file_path):
     return intervals, texts
 
 
-def calculate_interval_accuracy(reference_intervals, transcribed_intervals):
-    """
-    Calculates the accuracy of voice detection based on reference (ground truth) and transcribed intervals.
+def calculate_accuracy(ground_truth, predicted):
+    """Calculates background, voice, and overall accuracy.
+
+    Handles cases where ground_truth might be empty (all background).
 
     Args:
-        reference_intervals: List of tuples representing the true voice segments (start_time, end_time).
-        transcribed_intervals: List of tuples representing the predicted voice segments (start_time, end_time).
+        ground_truth: List of tuples representing ground truth intervals.
+        predicted: List of tuples representing predicted intervals.
 
     Returns:
-        float: Accuracy of the transcription as a percentage (0-100).
+        A tuple containing background, voice, and overall accuracy.
     """
-    reference_total_seconds = sum(end - start for start, end in reference_intervals)
-    if reference_total_seconds == 0:  # Handle case where there's no voice in the reference
-        return 100.0 if not transcribed_intervals else 0.0
 
-    correctly_detected_seconds = 0
+    tp_background = 0
+    fp_background = 0
+    tp_voice = 0
+    fn_voice = 0
+    fp_voice = 0
+    total_time = 0
 
-    for ref_start, ref_end in reference_intervals:
-        for trans_start, trans_end in transcribed_intervals:
-            # Calculate overlap between reference and transcribed intervals
-            overlap_start = max(ref_start, trans_start)
-            overlap_end = min(ref_end, trans_end)
-            overlap = max(0, overlap_end - overlap_start)  # Ensure overlap isn't negative
-            correctly_detected_seconds += overlap
+    if not ground_truth:  # Handle empty ground truth (all background)
+        fp_voice = sum(end - start for start, end in predicted)
+        tp_background = max(0, predicted[-1][1] - predicted[0][0] - fp_voice)  # Get total time as background minus predicted voice time
+        total_time = tp_background + fp_voice
+    else:
+        all_intervals = sorted(ground_truth + predicted, key=lambda x: x[0])
+        current_state = "background"
+        current_start = 0
 
-    accuracy = (correctly_detected_seconds / reference_total_seconds) * 100.0
-    return accuracy
+        for start, end in all_intervals:
+            duration = end - start
+            total_time += duration
+            if (start, end) in ground_truth:
+                if current_state == "background":
+                    tp_background += duration
+                else:
+                    tp_voice += duration
+                    fn_voice += start - current_start
+                current_state = "voice"
+                current_start = start
+            else:
+                if current_state == "background":
+                    fp_background += duration
+                else:
+                    fp_voice += duration
+                current_state = "voice"
+                current_start = start
+
+        if current_state == "voice" and (current_start, end) in ground_truth:
+            tp_voice += end - current_start
+
+    background_accuracy = tp_background / float(total_time) if total_time > 0 else 0.0
+    voice_accuracy = tp_voice / float(tp_voice + fn_voice) if tp_voice + fn_voice > 0 else 0.0
+    total_correct = tp_background + tp_voice
+    total_predicted = total_correct + fp_background + fp_voice
+    overall_accuracy = total_correct / float(total_predicted) if total_predicted > 0 else 0.0
+
+    # Convert to percentages with 4 decimal places
+    background_accuracy = round(background_accuracy * 100, 4)
+    voice_accuracy = round(voice_accuracy * 100, 4)
+    overall_accuracy = round(overall_accuracy * 100, 4)
+
+    return background_accuracy, voice_accuracy, overall_accuracy
 
 
 def show_predictions(audio, sample_rate, intervals_original, predictions, frame_rate, title):
@@ -103,7 +139,8 @@ def show_predictions(audio, sample_rate, intervals_original, predictions, frame_
     # compare accuracy with the original intervals
     print("Original intervals:", intervals_original)
     print("Predicted intervals:", intervals)
-    accuracy = calculate_interval_accuracy(intervals_original, intervals)
-    print("Accuracy:", accuracy)
+    background_accuracy, voice_accuracy, overall_accuracy = calculate_accuracy(intervals_original, intervals)
+    print(f"Background accuracy: {background_accuracy}")
+    print(f"Voice accuracy: {voice_accuracy}")
+    print(f"Overall accuracy: {overall_accuracy}")
 
-    fe.plot_audio_with_intervals(audio, sample_rate, intervals_original, title)
