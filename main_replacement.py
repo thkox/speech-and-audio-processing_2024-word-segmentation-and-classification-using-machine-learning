@@ -179,7 +179,6 @@ def main():
         elif answers["option"] == options[2]:  # Transcribe audio
             transcribe_options = [
                 "From the test in the database?",
-                "From a file of your choice?",
                 "Back",
             ]
             answers = inquirer.prompt(
