@@ -26,7 +26,7 @@ def train(output_dir=OUTPUT_DIR):
     print("Training MLP classifier")
 
     # Initialize MLP classifier with three layers
-    mlp_clf = MLPClassifier(hidden_layer_sizes=(100, 50, 25), max_iter=300, random_state=0,
+    mlp_clf = MLPClassifier(hidden_layer_sizes=(512, 256, 128), max_iter=300, random_state=0,
                             early_stopping=True)  # TODO Change the values
 
     # Train MLP classifier
