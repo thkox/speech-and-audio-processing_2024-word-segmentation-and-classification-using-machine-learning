@@ -58,8 +58,8 @@ def detect_voice_intervals(predictions, frame_rate, min_length=1):
         end_time = len(predictions) / frame_rate
         intervals.append((start_time, end_time))
 
-    for interval in intervals:
-        print(f"Voice from {interval[0]:.4f} sec to {interval[1]:.4f} sec")
+    # for interval in intervals:
+    #     print(f" From {interval[0]:.4f} to {interval[1]:.4f} sec")
 
     return intervals
 
