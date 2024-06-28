@@ -1,15 +1,15 @@
-import load_database as cda
 from classifiers import feature_extraction as fe
 import numpy as np
-import os
+import load_database as cda
 from scipy.ndimage import median_filter
 from classifiers import mlp, rnn, svm, least_squares as ls
+from classifiers.speech_to_text import transcribe_audio, show_predictions
 
 # Create the datasets that are necessary for the app
 cda.create_datasets()
 
 # Feature extraction of both background and foreground datasets
-fe.extract_features(shuffle_data=True, show_plots=False)  # to create and save the features
+fe.extract_features(shuffle_data=False, show_plots=False)  # to create and save the features
 
 # Train the classifiers
 svm.train()
@@ -24,7 +24,7 @@ rnn_model = rnn.load_model()
 ls_model = ls.load_model()
 
 # check a test file to predict the labels
-test_file = '/home/theo/Downloads/LibriSpeech/test-clean/2094/142345/2094-142345-0008.flac'
+test_file = 'files/datasets/test/Lab41-SRI-VOiCES-rm1-babb-sp0176-ch123271-sg0019-mc01-stu-clo-dg030.wav'
 
 # get the labels from the test file
 # labels = fe.webrtc_vad_speech_detection(test_file)
@@ -58,26 +58,14 @@ print("Least Squares predictions:", ls_predictions)
 ls_predictions_median = median_filter(ls_predictions, size=L)
 print("Least Squares predictions after median filter:", ls_predictions_median)
 
-# Combine the predictions
-combined_predictions = np.vstack(
-    (svm_predictions_median, mlp_predictions_median, rnn_predictions_median, ls_predictions_median))
-
-# Majority voting
-majority_voting = np.sign(np.sum(combined_predictions, axis=0))
-majority_voting_median = median_filter(majority_voting, size=L)
-print("Majority voting predictions:", majority_voting)
-
-
-def show_predictions(predictions, frame_rate, title):
-    intervals = fe.detect_voice_intervals(predictions, frame_rate)
-    fe.plot_audio_with_intervals(audio, sample_rate, intervals, title)
+# get the intervals of the voice
+intervals_original, texts = transcribe_audio(test_file)
 
 
 # Show the predictions
-show_predictions(svm_predictions_median, frame_rate, "SVM predictions")
-show_predictions(mlp_predictions_median, frame_rate, "MLP predictions")
-show_predictions(rnn_predictions_median, frame_rate, "RNN predictions")
-show_predictions(ls_predictions_median, frame_rate, "Least Squares predictions")
-show_predictions(majority_voting_median, frame_rate, "Majority voting predictions")
+show_predictions(audio, sample_rate, intervals_original, svm_predictions_median, frame_rate, "SVM predictions")
+show_predictions(audio, sample_rate, intervals_original, mlp_predictions_median, frame_rate, "MLP predictions")
+show_predictions(audio, sample_rate, intervals_original, rnn_predictions_median, frame_rate, "RNN predictions")
+show_predictions(audio, sample_rate, intervals_original, ls_predictions_median, frame_rate, "Least Squares predictions")
 
 print("=====================================")
