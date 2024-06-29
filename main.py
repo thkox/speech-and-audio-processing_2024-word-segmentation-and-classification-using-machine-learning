@@ -5,17 +5,17 @@ from scipy.ndimage import median_filter
 from classifiers import mlp, rnn, svm, least_squares as ls
 from classifiers.speech_to_text import transcribe_audio, show_predictions
 
-# Create the datasets that are necessary for the app
-cda.create_datasets()
-
-# Feature extraction of both background and foreground datasets
-fe.extract_features(shuffle_data=False, show_plots=False)  # to create and save the features
-
-# Train the classifiers
-svm.train()
-mlp.train()
-rnn.train()
-ls.train()
+# # Create the datasets that are necessary for the app
+# cda.create_datasets()
+#
+# # Feature extraction of both background and foreground datasets
+# fe.extract_features(shuffle_data=True, show_plots=False)  # to create and save the features
+#
+# # Train the classifiers
+# svm.train()
+# mlp.train()
+# rnn.train()
+# ls.train()
 
 # Load the trained models
 svm_model = svm.load_model()
@@ -24,7 +24,7 @@ rnn_model = rnn.load_model()
 ls_model = ls.load_model()
 
 # check a test file to predict the labels
-test_file = 'files/datasets/test/Lab41-SRI-VOiCES-rm1-babb-sp0176-ch123271-sg0019-mc01-stu-clo-dg030.wav'
+test_file = 'files/datasets/test/Lab41-SRI-VOiCES-rm1-babb-sp0118-ch121721-sg0026-mc01-stu-clo-dg060.wav'
 
 # get the labels from the test file
 # labels = fe.webrtc_vad_speech_detection(test_file)
@@ -63,9 +63,9 @@ intervals_original, texts = transcribe_audio(test_file)
 
 
 # Show the predictions
-show_predictions(audio, sample_rate, intervals_original, svm_predictions_median, frame_rate, "SVM predictions")
-show_predictions(audio, sample_rate, intervals_original, mlp_predictions_median, frame_rate, "MLP predictions")
-show_predictions(audio, sample_rate, intervals_original, rnn_predictions_median, frame_rate, "RNN predictions")
-show_predictions(audio, sample_rate, intervals_original, ls_predictions_median, frame_rate, "Least Squares predictions")
+show_predictions(audio, sample_rate, intervals_original, svm_predictions_median, frame_rate, "SVM")
+show_predictions(audio, sample_rate, intervals_original, mlp_predictions_median, frame_rate, "MLP")
+show_predictions(audio, sample_rate, intervals_original, rnn_predictions_median, frame_rate, "RNN")
+show_predictions(audio, sample_rate, intervals_original, ls_predictions_median, frame_rate, "Least_Squares")
 
 print("=====================================")

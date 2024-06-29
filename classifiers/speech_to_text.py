@@ -1,4 +1,5 @@
 import io
+import os
 from tempfile import NamedTemporaryFile
 import numpy as np
 import speech_recognition as sr
@@ -7,6 +8,7 @@ from pydub.silence import split_on_silence
 from classifiers import feature_extraction as fe
 from pydub.playback import play
 
+OUTPUT_DIR = 'files/output/results'
 
 def transcribe_audio(file_path):
     """
@@ -138,47 +140,56 @@ def show_predictions(audio, sample_rate, intervals_original, predictions, frame_
     intervals = fe.detect_voice_intervals(predictions, frame_rate)
     fe.plot_audio_with_intervals(audio, sample_rate, intervals, title)
 
-    # compare accuracy with the original intervals
-    print("Original intervals:", intervals_original)
-    print("Predicted intervals:", intervals)
+    # Prepare the output file path
+    output_file_path = os.path.join(OUTPUT_DIR, f"{title}.txt")
+    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
 
-    background_accuracy, voice_accuracy, overall_accuracy = calculate_accuracy(intervals_original, intervals)
-    print(f"Background accuracy: {background_accuracy}")
-    print(f"Voice accuracy: {voice_accuracy}")
-    print(f"Overall accuracy: {overall_accuracy}")
+    with open(output_file_path, 'w') as file:
+        # compare accuracy with the original intervals
+        file.write("Original intervals:\n")
+        file.write(f"{intervals_original}\n")
+        file.write("Predicted intervals:\n")
+        file.write(f"{intervals}\n\n")
 
-    # Normalize audio to avoid clipping
-    audio = audio / np.max(np.abs(audio))
+        background_accuracy, voice_accuracy, overall_accuracy = calculate_accuracy(intervals_original, intervals)
+        file.write(f"Background accuracy: {background_accuracy}\n")
+        file.write(f"Voice accuracy: {voice_accuracy}\n")
+        file.write(f"Overall accuracy: {overall_accuracy}\n\n")
 
-    # Convert to 16-bit PCM (adjust sample_width if needed)
-    audio_int16 = (audio * 32767).astype(np.int16)
+        # Normalize audio to avoid clipping
+        audio = audio / np.max(np.abs(audio))
 
-    # Convert to pydub AudioSegment
-    audio_segment = AudioSegment(
-        audio_int16.tobytes(),
-        frame_rate=sample_rate,
-        sample_width=2,  # 16-bit PCM
-        channels=1
-    )
+        # Convert to 16-bit PCM (adjust sample_width if needed)
+        audio_int16 = (audio * 32767).astype(np.int16)
 
-    # Play the predicted intervals
-    for start, end in intervals:
-        start_ms = int(start * 1000)
-        end_ms = int(end * 1000)
-        segment = audio_segment[start_ms:end_ms]
-        print(f"Playing interval: {start} to {end} seconds")
-        play(segment)
+        # Convert to pydub AudioSegment
+        audio_segment = AudioSegment(
+            audio_int16.tobytes(),
+            frame_rate=sample_rate,
+            sample_width=2,  # 16-bit PCM
+            channels=1
+        )
 
-        # Export the segment to a temporary file
-        with NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
-            segment.export(temp_file.name, format="wav")
-            temp_file_path = temp_file.name
+        # Play the predicted intervals
+        for start, end in intervals:
+            start_ms = int(start * 1000)
+            end_ms = int(end * 1000)
+            segment = audio_segment[start_ms:end_ms]
+            file.write(f"Playing interval: {start} to {end} seconds\n")
+            play(segment)
 
-        # Transcribe the temporary file
-        segment_intervals, segment_texts = transcribe_audio(temp_file_path)
+            # Export the segment to a temporary file
+            with NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
+                segment.export(temp_file.name, format="wav")
+                temp_file_path = temp_file.name
 
-        # Print the first text segment
-        if segment_texts:
-            print(f"Transcribed Text: {segment_texts[0]}")
-        else:
-            print("No text transcribed for this segment.")
+            # Transcribe the temporary file
+            segment_intervals, segment_texts = transcribe_audio(temp_file_path)
+
+            # Print the first text segment
+            if segment_texts:
+                file.write(f"Transcribed Text: {segment_texts[0]}\n\n")
+            else:
+                file.write("No text transcribed for this segment.\n\n")
+
+    print(f"Output saved to {output_file_path}")
