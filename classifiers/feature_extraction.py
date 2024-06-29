@@ -266,5 +266,4 @@ def load_features(features_file=FEATURES_FILE):
             mfccs = loaded_data['mfccs']
             mel_specs = loaded_data['mel_specs']
             labels = loaded_data['labels']
-            print(f"Features loaded from {features_file}")
             return mfccs, mel_specs, labels
