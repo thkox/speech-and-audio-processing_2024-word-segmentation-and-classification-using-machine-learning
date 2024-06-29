@@ -13,7 +13,11 @@ def train(output_dir=OUTPUT_DIR):
     Train Least Squares classifier on extracted features and save the model.
     """
 
-    _, features, labels = fe.load_features()
+    if fe.load_features() is None:
+        return
+    else:
+        _, features, labels = fe.load_features()
+
     if features is None or labels is None:
         print("Error loading features. Aborting training.")
         return
