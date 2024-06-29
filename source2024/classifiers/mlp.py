@@ -1,9 +1,9 @@
 from sklearn.neural_network import MLPClassifier
-from classifiers import feature_extraction as fe
+from source2024 import feature_extraction as fe
 import joblib
 import os
 
-OUTPUT_DIR = 'files/output/classifiers'
+OUTPUT_DIR = 'auxiliary2024/output/classifiers'
 
 
 def train(output_dir=OUTPUT_DIR):

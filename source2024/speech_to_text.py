@@ -5,10 +5,10 @@ import numpy as np
 import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
-from classifiers import feature_extraction as fe
+from source2024 import feature_extraction as fe
 from pydub.playback import play
 
-OUTPUT_DIR = 'files/output/results'
+OUTPUT_DIR = 'auxiliary2024/output/results'
 
 def transcribe_audio(file_path):
     """

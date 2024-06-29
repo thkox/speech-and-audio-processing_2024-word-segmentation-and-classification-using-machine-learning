@@ -6,12 +6,12 @@ from sklearn.utils import shuffle
 import webrtcvad
 
 # Define the directories for the datasets
-BACKGROUND_SOUND_DIR = 'files/datasets/background_sound'
-FOREGROUND_SOUND_DIR = 'files/datasets/foreground_sound'
+BACKGROUND_SOUND_DIR = 'auxiliary2024/datasets/background_sound'
+FOREGROUND_SOUND_DIR = 'auxiliary2024/datasets/foreground_sound'
 
-FEATURES_FILE = 'files/output/features.npz'
+FEATURES_FILE = 'auxiliary2024/output/features.npz'
 
-OUTPUT_DIR = 'files/output'
+OUTPUT_DIR = 'auxiliary2024/output'
 
 # Define constants for feature extraction parameters
 N_MFCC = 20  # Number of Mel-frequency cepstral coefficients (MFCCs) features to extract
@@ -122,11 +122,11 @@ def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=
 def load_audio_files_and_extract_features(directory, label, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH,
                                           show_plots=False):
     """
-    Load all audio files in a directory and extract MFCC features and mel spectrogram for each frame.
+    Load all audio auxiliary2024 in a directory and extract MFCC features and mel spectrogram for each frame.
 
     Args:
-        directory (str): Path to the directory containing audio files.
-        label (int): Label for the audio files (0 for background, 1 for foreground).
+        directory (str): Path to the directory containing audio auxiliary2024.
+        label (int): Label for the audio auxiliary2024 (0 for background, 1 for foreground).
         n_mfcc (int): Number of MFCC features to extract.
         n_fft (int): FFT window size.
         hop_length (int): Number of samples between successive frames.
@@ -137,7 +137,7 @@ def load_audio_files_and_extract_features(directory, label, n_mfcc=N_MFCC, n_fft
         np.ndarray: Extracted mel spectrogram for all frames.
         np.ndarray: Labels for the features.
     """
-    print(f"Loading audio files from {directory} and extracting features")
+    print(f"Loading audio auxiliary2024 from {directory} and extracting features")
     all_mfccs = []
     all_mel_specs = []
     all_labels = []
@@ -181,7 +181,7 @@ def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, shuffle_
 
     print("Starting feature extraction")
 
-    # Load audio files and extract features for each frame
+    # Load audio auxiliary2024 and extract features for each frame
     background_mfccs, background_mel_specs, background_labels = load_audio_files_and_extract_features(
         BACKGROUND_SOUND_DIR, 0, n_mfcc,
         n_fft, hop_length, show_plots)
@@ -220,7 +220,7 @@ def extract_features(n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH, shuffle_
     if shuffle_data:
         all_mfccs, all_mel_specs, all_labels = shuffle(all_mfccs, all_mel_specs, all_labels, random_state=0)
 
-    save_features('files/output/features.npz', all_mfccs, all_mel_specs, all_labels)
+    save_features('auxiliary2024/output/features.npz', all_mfccs, all_mel_specs, all_labels)
     print("Feature extraction completed and saved")
     return all_mfccs, all_mel_specs, all_labels
 

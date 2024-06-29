@@ -3,15 +3,15 @@ import shutil
 import wave
 
 # Define the root directory of the VOiCES dataset
-VOiCES_SOUNDS_DIR = 'files/input/VOiCES_devkit'
+VOiCES_SOUNDS_DIR = 'auxiliary2024/input/VOiCES_devkit'
 
 # Define the directories for the new datasets
-BACKGROUND_SOUND_DIR = 'files/datasets/background_sound'
-FOREGROUND_SOUND_DIR = 'files/datasets/foreground_sound'
-TEST_SOUND_DIR = 'files/datasets/test'
+BACKGROUND_SOUND_DIR = 'auxiliary2024/datasets/background_sound'
+FOREGROUND_SOUND_DIR = 'auxiliary2024/datasets/foreground_sound'
+TEST_SOUND_DIR = 'auxiliary2024/datasets/test'
 
 
-# Function to copy files to the new directory
+# Function to copy auxiliary2024 to the new directory
 def copy_files(src_dir, dest_dir, condition_func=None, max_duration=None):
     total_duration = 0
     files_duration = []  # List to hold tuples of (file_path, duration)
@@ -28,7 +28,7 @@ def copy_files(src_dir, dest_dir, condition_func=None, max_duration=None):
 
                 files_duration.append((src_file_path, duration))
 
-    # Calculate total duration of all files
+    # Calculate total duration of all auxiliary2024
     total_duration = sum(duration for _, duration in files_duration)
 
     # Check if total duration exceeds max_duration
@@ -50,7 +50,7 @@ def copy_files(src_dir, dest_dir, condition_func=None, max_duration=None):
         return max_duration  # Return max_duration as total duration
 
     else:
-        # Copy files without scaling
+        # Copy auxiliary2024 without scaling
         for src_file_path, duration in files_duration:
             dest_file_path = os.path.join(dest_dir, os.path.basename(src_file_path))
             shutil.copy2(src_file_path, dest_file_path)
@@ -79,15 +79,15 @@ def create_datasets():
     os.makedirs(FOREGROUND_SOUND_DIR, exist_ok=True)
     os.makedirs(TEST_SOUND_DIR, exist_ok=True)
 
-    # Copy foreground sound files
+    # Copy foreground sound auxiliary2024
     foreground_sound_src_dir = os.path.join(VOiCES_SOUNDS_DIR, 'distant-16k', 'speech', 'train', 'rm1', 'none')
     foreground_duration = copy_files(foreground_sound_src_dir, FOREGROUND_SOUND_DIR, foreground_condition)
 
-    # Copy background sound files
+    # Copy background sound auxiliary2024
     background_sound_src_dir = os.path.join(VOiCES_SOUNDS_DIR, 'distant-16k', 'distractors', 'rm1')
     copy_files(background_sound_src_dir, BACKGROUND_SOUND_DIR, background_condition, max_duration=foreground_duration)
 
-    # Copy test dataset files (both background and foreground)
+    # Copy test dataset auxiliary2024 (both background and foreground)
     test_dataset_src_dir = os.path.join(VOiCES_SOUNDS_DIR, 'distant-16k', 'speech', 'test', 'rm1')
     copy_files(test_dataset_src_dir, TEST_SOUND_DIR, test_condition)
 

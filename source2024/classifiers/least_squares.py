@@ -1,11 +1,11 @@
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from classifiers import feature_extraction as fe
+from source2024 import feature_extraction as fe
 import joblib
 import os
 import numpy as np
 
-OUTPUT_DIR = 'files/output/classifiers'
+OUTPUT_DIR = 'auxiliary2024/output/classifiers'
 
 
 def train(output_dir=OUTPUT_DIR):

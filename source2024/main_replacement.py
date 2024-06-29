@@ -1,16 +1,16 @@
 import inquirer
 import os
 import load_database as ldb
-from classifiers import svm, mlp, rnn, least_squares as ls
+from source2024.classifiers import rnn, svm, mlp, least_squares as ls
 import sys
-from classifiers import feature_extraction as fe
+from source2024 import feature_extraction as fe
 from scipy.ndimage import median_filter
 import numpy as np
 
 # Constants
-BACKGROUND_SOUND_DIR = "files/datasets/background_sound"
-FOREGROUND_SOUND_DIR = "files/datasets/foreground_sound"
-TEST_SOUND_DIR = "files/datasets/test"
+BACKGROUND_SOUND_DIR = "auxiliary2024/datasets/background_sound"
+FOREGROUND_SOUND_DIR = "auxiliary2024/datasets/foreground_sound"
+TEST_SOUND_DIR = "auxiliary2024/datasets/test"
 
 
 # Helper Functions
@@ -23,11 +23,11 @@ def check_dataset_exists():
 
 
 def check_features_exist():
-    return os.path.exists("files/output/features.npz")
+    return os.path.exists("auxiliary2024/output/features.npz")
 
 
 def check_model_exists(model_name):
-    return os.path.exists(f"files/output/{model_name}_model.pkl")
+    return os.path.exists(f"auxiliary2024/output/{model_name}_model.pkl")
 
 
 def get_audio_files():
@@ -96,40 +96,26 @@ def transcribe_audio(transcribe_option):
 
         # Predict using the trained models
         svm_predictions = svm.predict(features)
-        print("SVM predictions:", svm_predictions)
         svm_predictions_median = median_filter(svm_predictions, size=L)
         print("SVM predictions after median filter:", svm_predictions_median)
 
         mlp_predictions = mlp.predict(features)
-        print("MLP predictions:", mlp_predictions)
         mlp_predictions_median = median_filter(mlp_predictions, size=L)
         print("MLP predictions after median filter:", mlp_predictions_median)
 
         rnn_predictions = rnn.predict(features, n_of_files=1)
-        print("RNN predictions:", rnn_predictions)
         rnn_predictions_median = np.squeeze(median_filter(rnn_predictions, size=L))
         print("RNN predictions after median filter:", rnn_predictions_median)
 
         ls_predictions = ls.predict(features)
-        print("Least Squares predictions:", ls_predictions)
         ls_predictions_median = median_filter(ls_predictions, size=L)
         print("Least Squares predictions after median filter:", ls_predictions_median)
-
-        # Combine the predictions
-        combined_predictions = np.vstack(
-            (svm_predictions_median, mlp_predictions_median, rnn_predictions_median, ls_predictions_median))
-
-        # Majority voting
-        majority_voting = np.sign(np.sum(combined_predictions, axis=0))
-        majority_voting_median = median_filter(majority_voting, size=L)
-        print("Majority voting predictions:", majority_voting_median)
 
         # Show the predictions
         show_predictions(audio, sample_rate, svm_predictions_median, frame_rate, "SVM predictions")
         show_predictions(audio, sample_rate, mlp_predictions_median, frame_rate, "MLP predictions")
         show_predictions(audio, sample_rate, rnn_predictions_median, frame_rate, "RNN predictions")
         show_predictions(audio, sample_rate, ls_predictions_median, frame_rate, "Least Squares predictions")
-        show_predictions(audio, sample_rate, majority_voting_median, frame_rate, "Majority voting predictions")
 
     elif transcribe_option == "From a file of your choice?":
         print("Please provide the path to the audio file to transcribe.")

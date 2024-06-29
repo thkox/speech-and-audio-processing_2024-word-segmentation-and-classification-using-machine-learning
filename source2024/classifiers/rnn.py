@@ -1,9 +1,9 @@
 import numpy as np
 import tensorflow as tf
-from classifiers import feature_extraction as fe
+from source2024 import feature_extraction as fe
 import os
 
-OUTPUT_DIR = 'files/output/classifiers'
+OUTPUT_DIR = 'auxiliary2024/output/classifiers'
 
 
 def get_divisor(n, k):
@@ -33,7 +33,7 @@ def preprocess_features(features, labels, n_of_files=1):
     Args:
         features (np.ndarray): The extracted features.
         labels (np.ndarray): The labels corresponding to the features.
-        n_of_files (int): The number of files to split the features into.
+        n_of_files (int): The number of auxiliary2024 to split the features into.
 
     Returns:
         np.ndarray, np.ndarray: Preprocessed features and labels.
@@ -41,10 +41,10 @@ def preprocess_features(features, labels, n_of_files=1):
     timesteps, n_mels = features.shape
 
     # Reshape features and labels to fit the model input shape
-    # First reshape to split into files
+    # First reshape to split into auxiliary2024
     features = features.reshape((n_of_files, timesteps // n_of_files, n_mels))
 
-    # Adjust labels to match the number of files
+    # Adjust labels to match the number of auxiliary2024
     labels = labels.reshape((n_of_files, timesteps // n_of_files))  # Ensuring labels match feature shapes
 
     return features, labels
