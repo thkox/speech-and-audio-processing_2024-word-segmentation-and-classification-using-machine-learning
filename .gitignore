@@ -9,3 +9,7 @@
 /files/output/features.npz
 /files/output/classifiers/rnn_model.keras
 /files/output/classifiers/ls_model.pkl
+/files/output/results/Least_Squares.txt
+/files/output/results/MLP.txt
+/files/output/results/RNN.txt
+/files/output/results/SVM.txt
