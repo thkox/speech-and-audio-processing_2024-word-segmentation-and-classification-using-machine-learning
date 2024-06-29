@@ -22,6 +22,10 @@ def check_dataset_exists():
     )
 
 
+def check_features_exist():
+    return os.path.exists("files/output/features.npz")
+
+
 def check_model_exists(model_name):
     return os.path.exists(f"files/output/{model_name}_model.pkl")
 
@@ -37,6 +41,11 @@ def is_interactive():
 def load_dataset():
     print("Loading the dataset...")
     ldb.create_datasets()
+
+
+def extract_features():
+    print("Extracting features from the datasets...")
+    fe.extract_features(shuffle_data=True, show_plots=False)
 
 
 def train_model(model):
@@ -141,6 +150,7 @@ def main():
     while True:
         options = [
             "Load the necessary dataset",
+            "Extract features from the dataset",
             "Train the models",
             "Transcribe an audio file",
             "Quit",
@@ -156,7 +166,14 @@ def main():
         if answers["option"] == options[0]:  # Load dataset
             if not check_dataset_exists():
                 load_dataset()
-        elif answers["option"] == options[1]:  # Train models
+            else:
+                print("Dataset already exists. Skipping dataset loading.\n")
+        elif answers["option"] == options[1]:  # Extract features
+            if not check_features_exist():
+                extract_features()
+            else:
+                print("Features already exist. Skipping feature extraction.\n")
+        elif answers["option"] == options[2]:  # Train models
             models = [
                 "SVM",
                 "MLP Three Layers",
@@ -176,7 +193,7 @@ def main():
             )
             if answers["model"] != "Back":
                 train_model(answers["model"])
-        elif answers["option"] == options[2]:  # Transcribe audio
+        elif answers["option"] == options[3]:  # Transcribe audio
             transcribe_options = [
                 "From the test in the database?",
                 "Back",
@@ -192,7 +209,7 @@ def main():
             )
             if answers["transcribe_option"] != "Back":
                 transcribe_audio(answers["transcribe_option"])
-        elif answers["option"] == options[3]:  # Quit
+        elif answers["option"] == options[4]:  # Quit
             print("Quitting the program.")
             break
 
