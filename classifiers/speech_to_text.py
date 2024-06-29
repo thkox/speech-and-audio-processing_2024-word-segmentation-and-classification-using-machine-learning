@@ -1,9 +1,11 @@
 import io
+from tempfile import NamedTemporaryFile
+import numpy as np
 import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from classifiers import feature_extraction as fe
-import io
+from pydub.playback import play
 
 
 def transcribe_audio(file_path):
@@ -139,8 +141,44 @@ def show_predictions(audio, sample_rate, intervals_original, predictions, frame_
     # compare accuracy with the original intervals
     print("Original intervals:", intervals_original)
     print("Predicted intervals:", intervals)
+
     background_accuracy, voice_accuracy, overall_accuracy = calculate_accuracy(intervals_original, intervals)
     print(f"Background accuracy: {background_accuracy}")
     print(f"Voice accuracy: {voice_accuracy}")
     print(f"Overall accuracy: {overall_accuracy}")
 
+    # Normalize audio to avoid clipping
+    audio = audio / np.max(np.abs(audio))
+
+    # Convert to 16-bit PCM (adjust sample_width if needed)
+    audio_int16 = (audio * 32767).astype(np.int16)
+
+    # Convert to pydub AudioSegment
+    audio_segment = AudioSegment(
+        audio_int16.tobytes(),
+        frame_rate=sample_rate,
+        sample_width=2,  # 16-bit PCM
+        channels=1
+    )
+
+    # Play the predicted intervals
+    for start, end in intervals:
+        start_ms = int(start * 1000)
+        end_ms = int(end * 1000)
+        segment = audio_segment[start_ms:end_ms]
+        print(f"Playing interval: {start} to {end} seconds")
+        play(segment)
+
+        # Export the segment to a temporary file
+        with NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
+            segment.export(temp_file.name, format="wav")
+            temp_file_path = temp_file.name
+
+        # Transcribe the temporary file
+        segment_intervals, segment_texts = transcribe_audio(temp_file_path)
+
+        # Print the first text segment
+        if segment_texts:
+            print(f"Transcribed Text: {segment_texts[0]}")
+        else:
+            print("No text transcribed for this segment.")
