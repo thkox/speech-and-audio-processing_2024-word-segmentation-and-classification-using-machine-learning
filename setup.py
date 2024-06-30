@@ -30,7 +30,6 @@ def create_conda_env():
 
 def activate_conda_env():
     env_name = "speech-and-audio-processing"
-    activation_command = ""
 
     if platform.system() == "Windows":
         activation_command = f"activate {env_name}"

@@ -53,7 +53,7 @@ def transcribe_audio(file_path):
                 texts.append(text)
             except sr.UnknownValueError:
                 pass
-            except sr.RequestError as e:
+            except sr.RequestError:
                 pass
 
     return intervals, texts
