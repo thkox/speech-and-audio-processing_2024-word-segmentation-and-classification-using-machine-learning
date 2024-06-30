@@ -1,11 +1,25 @@
-import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from source2024 import feature_extraction as fe
 import joblib
 import os
 import numpy as np
+import tensorflow as tf
+
 
 OUTPUT_DIR = 'auxiliary2024/output/classifiers'
+
+
+def preprocess_data(x, y=None):
+    x = tf.constant(x, dtype=tf.float32)
+    if x.shape.rank == 1:
+        x = tf.expand_dims(x, axis=-1)  # Make it a column vector
+    if y is not None:
+        y = tf.constant(y, dtype=tf.float32)
+        if y.shape.rank == 1:
+            y = tf.expand_dims(y, axis=-1)  # Make it a column vector
+        return x, y
+    else:
+        return x
 
 
 def train(output_dir=OUTPUT_DIR):
@@ -28,19 +42,33 @@ def train(output_dir=OUTPUT_DIR):
     print("=====================================")
     print("Training Least Squares classifier")
 
+    # Split data into training and validation sets
+    x_train, x_val, y_train, y_val = train_test_split(features, labels, test_size=0.1, random_state=0)
+
     # Ensure features and labels are 2D tensors
-    features_train = tf.constant(features, dtype=tf.float32)
-    if features_train.shape.rank == 1:
-        features_train = tf.expand_dims(features_train, axis=-1)  # Make it a column vector
-    labels_train = tf.constant(labels, dtype=tf.float32)
-    if labels_train.shape.rank == 1:
-        labels_train = tf.expand_dims(labels_train, axis=-1)  # Make it a column vector
+    x_train, y_train = preprocess_data(x_train, y_train)
 
     # Add bias term to features
-    features_train = tf.concat([tf.ones((features_train.shape[0], 1), dtype=tf.float32), features_train], axis=1)
+    x_train = tf.concat([tf.ones((x_train.shape[0], 1), dtype=tf.float32), x_train], axis=1)
 
     # Use tf.linalg.lstsq to solve for weights
-    weights = tf.linalg.lstsq(features_train, labels_train, fast=False)
+    weights = tf.linalg.lstsq(x_train, y_train, fast=False)
+
+    # Validate the model
+    x_val, y_val = preprocess_data(x_val, y_val)
+
+    # Add bias term to validation features
+    x_val = tf.concat([tf.ones((x_val.shape[0], 1), dtype=tf.float32), x_val], axis=1)
+
+    # Compute validation predictions
+    val_predictions = tf.sign(tf.matmul(x_val, weights))
+
+    # Convert predictions to 0 and 1
+    val_binary_predictions = np.where(val_predictions.numpy() == -1, 0, 1)
+
+    # Calculate validation accuracy
+    val_accuracy = np.mean(val_binary_predictions == y_val.numpy().ravel())
+    print(f"Validation Accuracy: {val_accuracy}")
 
     # Save the trained weights
     model_filename = os.path.join(output_dir, 'ls_model.pkl')
@@ -95,4 +123,3 @@ def predict(features):
     binary_predictions = binary_predictions.ravel()
 
     return binary_predictions
-
