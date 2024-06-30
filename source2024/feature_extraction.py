@@ -115,7 +115,8 @@ def load_and_extract_features(file_path, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=
         plt.tight_layout()
         plt.show()
 
-    return mfccs.T, mel_spec_db.T, sample_rate, audio  # Return MFCCs, mel spectrogram, sample_rate and audio for each frame (transposed for convenience)
+    # Return MFCCs, mel spectrogram, sample_rate and audio for each frame (transposed for convenience)
+    return mfccs.T, mel_spec_db.T, sample_rate, audio
 
 
 def load_audio_files_and_extract_features(directory, label, n_mfcc=N_MFCC, n_fft=N_FFT, hop_length=HOP_LENGTH,
