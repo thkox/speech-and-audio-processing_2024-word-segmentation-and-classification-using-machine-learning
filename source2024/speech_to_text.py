@@ -10,6 +10,7 @@ from pydub.playback import play
 
 OUTPUT_DIR = 'auxiliary2024/output/results'
 
+
 def transcribe_audio(file_path):
     """
     Transcribes the speech in an audio file using Google Speech Recognition API.
@@ -81,7 +82,8 @@ def calculate_accuracy(ground_truth, predicted):
 
     if not ground_truth:  # Handle empty ground truth (all background)
         fp_voice = sum(end - start for start, end in predicted)
-        tp_background = max(0, predicted[-1][1] - predicted[0][0] - fp_voice)  # Get total time as background minus predicted voice time
+        # Get total time as background minus predicted voice time
+        tp_background = max(0, predicted[-1][1] - predicted[0][0] - fp_voice)
         total_time = tp_background + fp_voice
     else:
         all_intervals = sorted(ground_truth + predicted, key=lambda x: x[0])
