@@ -148,13 +148,18 @@ def show_predictions(audio, sample_rate, intervals_original, predictions, frame_
         # compare accuracy with the original intervals
         file.write("Original intervals:\n")
         file.write(f"{intervals_original}\n")
+        print("Original intervals:" + str(intervals_original))
         file.write("Predicted intervals:\n")
         file.write(f"{intervals}\n\n")
+        print("Predicted intervals:" + str(intervals))
 
         background_accuracy, voice_accuracy, overall_accuracy = calculate_accuracy(intervals_original, intervals)
         file.write(f"Background accuracy: {background_accuracy}\n")
+        print(f"Background accuracy: {background_accuracy}")
         file.write(f"Voice accuracy: {voice_accuracy}\n")
+        print(f"Voice accuracy: {voice_accuracy}")
         file.write(f"Overall accuracy: {overall_accuracy}\n\n")
+        print(f"Overall accuracy: {overall_accuracy}")
 
         # Normalize audio to avoid clipping
         audio = audio / np.max(np.abs(audio))
@@ -176,6 +181,7 @@ def show_predictions(audio, sample_rate, intervals_original, predictions, frame_
             end_ms = int(end * 1000)
             segment = audio_segment[start_ms:end_ms]
             file.write(f"Playing interval: {start} to {end} seconds\n")
+            print(f"Playing interval: {start} to {end} seconds")
             play(segment)
 
             # Export the segment to a temporary file
@@ -189,7 +195,9 @@ def show_predictions(audio, sample_rate, intervals_original, predictions, frame_
             # Print the first text segment
             if segment_texts:
                 file.write(f"Transcribed Text: {segment_texts[0]}\n\n")
+                print(f"Transcribed Text: {segment_texts[0]}\n")
             else:
                 file.write("No text transcribed for this segment.\n\n")
+                print("No text transcribed for this segment.\n\n")
 
     print(f"Output saved to {output_file_path}")
