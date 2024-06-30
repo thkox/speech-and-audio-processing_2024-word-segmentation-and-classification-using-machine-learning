@@ -87,7 +87,7 @@ def train(output_dir=OUTPUT_DIR):
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # Train the model
-    model.fit(features, labels, epochs=40, batch_size=32, validation_split=0.1)
+    model.fit(features, labels, epochs=10, batch_size=32, validation_split=0.1)
 
     # Save the trained model
     model_filename = os.path.join(output_dir, 'rnn_model.keras')
@@ -122,6 +122,7 @@ def predict(features, n_of_files=1):
 
     Args:
         features (np.ndarray): New data for prediction.
+        n_of_files (int): The number of auxiliary2024 to split the features into.
 
     Returns:
         np.ndarray: Predicted labels.
