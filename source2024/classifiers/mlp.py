@@ -26,8 +26,8 @@ def train(output_dir=OUTPUT_DIR):
     print("Training MLP classifier")
 
     # Initialize MLP classifier with three layers
-    mlp_clf = MLPClassifier(hidden_layer_sizes=(512, 256, 128), max_iter=300, random_state=0,
-                            early_stopping=True)  # TODO Change the values
+    mlp_clf = MLPClassifier(hidden_layer_sizes=(256, 128, 64), max_iter=300, random_state=0,
+                            early_stopping=True)
 
     # Train MLP classifier
     mlp_clf.fit(features, labels)
@@ -67,7 +67,6 @@ def predict(features):
     Predict the labels of given features using the trained MLP model.
 
     Args:
-        model (MLPClassifier): Trained MLP classifier.
         features (np.ndarray): Features to predict the labels.
 
     Returns:
