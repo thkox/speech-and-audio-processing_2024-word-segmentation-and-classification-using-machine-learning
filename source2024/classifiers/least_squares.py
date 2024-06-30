@@ -103,7 +103,6 @@ def predict(features):
     Predict the labels of given features using the trained Least Squares model.
 
     Args:
-        model (np.ndarray): Trained Least Squares weights.
         features (np.ndarray): Features to predict the labels.
 
     Returns:
