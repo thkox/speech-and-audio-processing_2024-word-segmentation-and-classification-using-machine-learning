@@ -1,6 +1,6 @@
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score
 from source2024 import feature_extraction as fe
 import joblib
 import os
@@ -31,7 +31,6 @@ def train(output_dir=OUTPUT_DIR):
     x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.1, random_state=0)
 
     # Initialize SVM classifier
-    # svm_clf = SVC(kernel='linear', random_state=0) -> old code
     svm_clf = LinearSVC(random_state=0)
 
     # Train SVM classifier
@@ -51,10 +50,6 @@ def train(output_dir=OUTPUT_DIR):
     os.makedirs(os.path.dirname(model_filename), exist_ok=True)
 
     joblib.dump(svm_clf, model_filename)
-
-    # Print classification report
-    print("SVM Classification Report:")
-    print(classification_report(y_test, y_pred))
 
     print("SVM training completed")
     print("=====================================")
