@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from source2024 import feature_extraction as fe
 
 OUTPUT_DIR = 'auxiliary2024/output/classifiers'
@@ -61,10 +62,9 @@ def train(output_dir=OUTPUT_DIR):
     x_val = add_bias_term(x_val)
     val_predictions = tf.sign(tf.matmul(x_val, weights))
 
-    # Convert predictions to 0 and 1 and calculate validation accuracy
-    val_binary_predictions = np.where(val_predictions.numpy() == -1, 0, 1)
-    val_accuracy = np.mean(val_binary_predictions == y_val.numpy().ravel())
-    print(f"Validation Accuracy: {val_accuracy}")
+    # Calculate accuracy
+    accuracy = accuracy_score(y_val.numpy().flatten(), val_predictions.numpy().flatten())
+    print("Least Squares Accuracy: {:.2f}%".format(accuracy * 100))
 
     # Save the trained weights
     os.makedirs(output_dir, exist_ok=True)
