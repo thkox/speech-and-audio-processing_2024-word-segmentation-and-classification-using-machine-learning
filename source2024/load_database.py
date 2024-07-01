@@ -35,7 +35,7 @@ def background_condition(file):
 
 # Condition function for foreground sounds (rm1, mc01, none, clo)
 def foreground_condition(file):
-    return 'rm1' in file and 'mc01' in file and 'none' in file and 'clo' in file
+    return 'rm1' in file and 'mc01' in file and 'clo' in file
 
 
 def test_condition(file):
