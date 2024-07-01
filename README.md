@@ -53,5 +53,5 @@ The environment.yml file specifies the required dependencies:
 ### Running the program
 
 After activating the conda environment, you can run the program using either `main.py` or `main_replacement.py`.  
-- `main.py` is the original script that runs the entire process from loading the dataset, extracting features, training the models, and making predictions.  
-- `main_replacement.py` is an interactive script that allows you to choose which part of the process you want to run. It provides options to load the dataset, extract features, train the models, and transcribe an audio file.
+- `main.py` is the original script that runs the entire process from loading the dataset, extracting features, training the models, and making predictions. It's inside the `source2024` directory.  
+- `main_replacement.py` is an interactive script that allows you to choose which part of the process you want to run. It provides options to load the dataset, extract features, train the models, and transcribe an audio file. It's inside the `root` directory of the project.
