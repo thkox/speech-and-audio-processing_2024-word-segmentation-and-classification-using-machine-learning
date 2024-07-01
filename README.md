@@ -12,7 +12,11 @@ Ensure you have Anaconda or Miniconda installed on your system. You can download
    git clone https://github.com/thkox/speech-and-audio-processing
    cd https://github.com/thkox/speech-and-audio-processing
 
-2. Download the dataset from [here](https://www.anaconda.com/products/distribution). **Hint**: You don't need to have an AWS account to download the dataset. You can download it directly from the link provided using the aws cli.
+2. Download the **VOiCES** dataset from [here](https://www.anaconda.com/products/distribution).
+   - **Keep in mind**: 
+     - You don't need to have an AWS account to download the dataset. You can download it directly from the link provided using the aws cli.
+     - The dataset is large (around 30GB the .tar.gz file and around 40GB the extracted dataset), **so ensure you have enough space on your system**.
+   
 3. Extract the dataset to the `auxiliary2024/input/` directory. The dataset should be in the following format:
 
 
