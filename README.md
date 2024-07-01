@@ -21,21 +21,21 @@ Ensure you have Anaconda or Miniconda installed on your system. You can download
 
 After the setup script completes, you can activate the conda environment using the following command:
 
-### On Windows
+### On Windows , MacOS, and Linux
 
-    python setup.py
-
-### On macOS and Linux
-
-    source activate speech-and-audio-processing
+    conda activate speech-and-audio-processing
 
 ## Additional Information
 
 The environment.yml file specifies the required dependencies:
 - Python 3.11
-- NumPy 1.25.x
-- librosa 0.10.0
-- TensorFlow 2.15.0
+- TensorFlow 2.16.1
+- NumPy 1.25.*
+- librosa 0.10.*
+- pandas
+- inquirer
+- speechrecognition
+- pydub
 
 
 ### Summary
@@ -45,3 +45,9 @@ The environment.yml file specifies the required dependencies:
 - The `README.md` file contains detailed instructions for users to set up and activate the environment.
 
 Place these files in the root directory of your project repository. Users can then follow the instructions in the `README.md` to set up their environment.
+
+### Running the program
+
+After activating the conda environment, you can run the program using either `main.py` or `main_replacement.py`.  
+- `main.py` is the original script that runs the entire process from loading the dataset, extracting features, training the models, and making predictions.  
+- `main_replacement.py` is an interactive script that allows you to choose which part of the process you want to run. It provides options to load the dataset, extract features, train the models, and transcribe an audio file.
