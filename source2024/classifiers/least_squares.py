@@ -1,25 +1,27 @@
-from sklearn.model_selection import train_test_split
-from source2024 import feature_extraction as fe
-import joblib
 import os
+import joblib
 import numpy as np
 import tensorflow as tf
-
+from sklearn.model_selection import train_test_split
+from source2024 import feature_extraction as fe
 
 OUTPUT_DIR = 'auxiliary2024/output/classifiers'
 
 
 def preprocess_data(x, y=None):
-    x = tf.constant(x, dtype=tf.float32)
+    x = tf.convert_to_tensor(x, dtype=tf.float32)
     if x.shape.rank == 1:
-        x = tf.expand_dims(x, axis=-1)  # Make it a column vector
+        x = tf.expand_dims(x, axis=-1)
     if y is not None:
-        y = tf.constant(y, dtype=tf.float32)
+        y = tf.convert_to_tensor(y, dtype=tf.float32)
         if y.shape.rank == 1:
-            y = tf.expand_dims(y, axis=-1)  # Make it a column vector
+            y = tf.expand_dims(y, axis=-1)
         return x, y
-    else:
-        return x
+    return x
+
+
+def add_bias_term(features):
+    return tf.concat([tf.ones((features.shape[0], 1), dtype=tf.float32), features], axis=1)
 
 
 def train(output_dir=OUTPUT_DIR):
@@ -27,10 +29,12 @@ def train(output_dir=OUTPUT_DIR):
     Train Least Squares classifier on extracted features and save the model.
     """
 
-    if fe.load_features() is None:
+    features_labels = fe.load_features()
+    if features_labels is None:
+        print("No features found. Aborting training.")
         return
-    else:
-        _, features, labels = fe.load_features()
+
+    _, features, labels = features_labels
 
     if features is None or labels is None:
         print("Error loading features. Aborting training.")
@@ -45,34 +49,26 @@ def train(output_dir=OUTPUT_DIR):
     # Split data into training and validation sets
     x_train, x_val, y_train, y_val = train_test_split(features, labels, test_size=0.1, random_state=0)
 
-    # Ensure features and labels are 2D tensors
+    # Preprocess data and add bias term
     x_train, y_train = preprocess_data(x_train, y_train)
-
-    # Add bias term to features
-    x_train = tf.concat([tf.ones((x_train.shape[0], 1), dtype=tf.float32), x_train], axis=1)
+    x_train = add_bias_term(x_train)
 
     # Use tf.linalg.lstsq to solve for weights
     weights = tf.linalg.lstsq(x_train, y_train, fast=False)
 
     # Validate the model
     x_val, y_val = preprocess_data(x_val, y_val)
-
-    # Add bias term to validation features
-    x_val = tf.concat([tf.ones((x_val.shape[0], 1), dtype=tf.float32), x_val], axis=1)
-
-    # Compute validation predictions
+    x_val = add_bias_term(x_val)
     val_predictions = tf.sign(tf.matmul(x_val, weights))
 
-    # Convert predictions to 0 and 1
+    # Convert predictions to 0 and 1 and calculate validation accuracy
     val_binary_predictions = np.where(val_predictions.numpy() == -1, 0, 1)
-
-    # Calculate validation accuracy
     val_accuracy = np.mean(val_binary_predictions == y_val.numpy().ravel())
     print(f"Validation Accuracy: {val_accuracy}")
 
     # Save the trained weights
+    os.makedirs(output_dir, exist_ok=True)
     model_filename = os.path.join(output_dir, 'ls_model.pkl')
-    os.makedirs(os.path.dirname(model_filename), exist_ok=True)
     joblib.dump(weights.numpy(), model_filename)
 
     print("Least Squares training completed")
