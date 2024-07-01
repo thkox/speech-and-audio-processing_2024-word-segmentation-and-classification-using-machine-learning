@@ -145,19 +145,15 @@ def main():
                 # Predict using the trained models
                 svm_predictions = svm.predict(features)
                 svm_predictions_median = median_filter(svm_predictions, size=L)
-                print("SVM predictions after median filter:", svm_predictions_median)
 
                 mlp_predictions = mlp.predict(features)
                 mlp_predictions_median = median_filter(mlp_predictions, size=L)
-                print("MLP predictions after median filter:", mlp_predictions_median)
 
                 rnn_predictions = rnn.predict(features, n_of_files=1)
                 rnn_predictions_median = np.squeeze(median_filter(rnn_predictions, size=L))
-                print("RNN predictions after median filter:", rnn_predictions_median)
 
                 ls_predictions = ls.predict(features)
                 ls_predictions_median = median_filter(ls_predictions, size=L)
-                print("Least Squares predictions after median filter:", ls_predictions_median)
 
                 # Show the predictions
                 show_predictions(audio, sample_rate, intervals_original, svm_predictions_median, frame_rate, "SVM", audio_file)
