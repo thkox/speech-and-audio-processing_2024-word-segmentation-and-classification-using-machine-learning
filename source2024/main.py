@@ -17,12 +17,6 @@ mlp.train()
 rnn.train()
 ls.train()
 
-# Load the trained models
-svm_model = svm.load_model()
-mlp_model = mlp.load_model()
-rnn_model = rnn.load_model()
-ls_model = ls.load_model()
-
 # check a test file to predict the labels
 test_file = 'auxiliary2024/datasets/test/Lab41-SRI-VOiCES-rm1-babb-sp0175-ch129587-sg0019-mc01-stu-clo-dg000.wav'
 
@@ -52,9 +46,9 @@ intervals_original, texts = transcribe_audio(test_file)
 
 
 # Show the predictions
-show_predictions(audio, sample_rate, intervals_original, svm_predictions_median, frame_rate, "SVM")
-show_predictions(audio, sample_rate, intervals_original, mlp_predictions_median, frame_rate, "MLP")
-show_predictions(audio, sample_rate, intervals_original, rnn_predictions_median, frame_rate, "RNN")
-show_predictions(audio, sample_rate, intervals_original, ls_predictions_median, frame_rate, "Least_Squares")
+show_predictions(audio, sample_rate, intervals_original, svm_predictions_median, frame_rate, "SVM", test_file)
+show_predictions(audio, sample_rate, intervals_original, mlp_predictions_median, frame_rate, "MLP", test_file)
+show_predictions(audio, sample_rate, intervals_original, rnn_predictions_median, frame_rate, "RNN", test_file)
+show_predictions(audio, sample_rate, intervals_original, ls_predictions_median, frame_rate, "Least_Squares", test_file)
 
 print("=====================================")
