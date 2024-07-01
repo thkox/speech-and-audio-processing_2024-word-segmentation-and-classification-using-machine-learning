@@ -28,8 +28,8 @@ def transcribe_audio(file_path):
     # Load your audio file
     audio = AudioSegment.from_file(file_path)
 
-    # Split audio where silence is longer than 400ms and get chunks
-    chunks = split_on_silence(audio, min_silence_len=400, silence_thresh=-40)
+    # Split audio where silence is longer than 100ms and get chunks
+    chunks = split_on_silence(audio, min_silence_len=100, silence_thresh=-40)
 
     # Store intervals and their text
     intervals = []
@@ -126,7 +126,7 @@ def calculate_accuracy(ground_truth, predicted):
     return background_accuracy, voice_accuracy, overall_accuracy
 
 
-def show_predictions(audio, sample_rate, intervals_original, predictions, frame_rate, title):
+def show_predictions(audio, sample_rate, intervals_original, predictions, frame_rate, title, audio_file):
     """
     Show the predictions of the voice intervals.
 
@@ -143,7 +143,8 @@ def show_predictions(audio, sample_rate, intervals_original, predictions, frame_
     fe.plot_audio_with_intervals(audio, sample_rate, intervals, title)
 
     # Prepare the output file path
-    output_file_path = os.path.join(OUTPUT_DIR, f"{title}.txt")
+    output_file_name = f"{title}_{os.path.basename(audio_file).replace('.wav', '')}.txt"
+    output_file_path = os.path.join(OUTPUT_DIR, output_file_name)
     os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
 
     with open(output_file_path, 'w') as file:
@@ -194,12 +195,15 @@ def show_predictions(audio, sample_rate, intervals_original, predictions, frame_
             # Transcribe the temporary file
             segment_intervals, segment_texts = transcribe_audio(temp_file_path)
 
+            # Delete the temporary file
+            os.remove(temp_file_path)
+
             # Print the first text segment
             if segment_texts:
                 file.write(f"Transcribed Text: {segment_texts[0]}\n\n")
                 print(f"Transcribed Text: {segment_texts[0]}\n")
             else:
                 file.write("No text transcribed for this segment.\n\n")
-                print("No text transcribed for this segment.\n\n")
+                print("\nNo text transcribed for this segment.\n\n")
 
-    print(f"Output saved to {output_file_path}")
+    print(f"Output saved to {output_file_path}\n")
