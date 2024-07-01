@@ -73,7 +73,7 @@ def train(output_dir=OUTPUT_DIR):
     # find the 4th divisor of the timesteps
 
     timesteps, n_mels = features.shape
-    n_of_files = get_divisor(timesteps, 11)
+    n_of_files = get_divisor(timesteps, 6)
     features, labels = preprocess_features(features, labels, n_of_files)
 
     # Initialize RNN model
