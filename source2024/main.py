@@ -20,7 +20,6 @@ ls.train()
 # check a test file to predict the labels
 test_file = 'auxiliary2024/datasets/test/Lab41-SRI-VOiCES-rm1-babb-sp0175-ch129587-sg0019-mc01-stu-clo-dg000.wav'
 
-
 # Extract features from the test file
 _, features, sample_rate, audio = fe.load_and_extract_features(test_file, show_plots=False)
 hop_length = fe.HOP_LENGTH
@@ -43,7 +42,6 @@ ls_predictions_median = median_filter(ls_predictions, size=L)
 
 # get the intervals of the voice
 intervals_original, texts = transcribe_audio(test_file)
-
 
 # Show the predictions
 show_predictions(audio, sample_rate, intervals_original, svm_predictions_median, frame_rate, "SVM", test_file)
