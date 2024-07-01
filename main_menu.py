@@ -49,20 +49,38 @@ def extract_features_wrapper():
     extract_features(shuffle_data=False, show_plots=False)
 
 
+def train_model(model):
+    if not check_model_exists(model):
+        print(f"Training the {model} model...")
+        if model == "SVM":
+            svm.train()
+        elif model == "MLP Three Layers":
+            mlp.train()
+        elif model == "RNN":
+            rnn.train()
+        elif model == "Least Squares":
+            ls.train()
+
+
 def train_models():
     models = ["SVM", "MLP Three Layers", "RNN", "Least Squares"]
 
-    for model in models:
-        if not check_model_exists(model):
-            print(f"Training the {model} model...")
-            if model == "SVM":
-                svm.train()
-            elif model == "MLP Three Layers":
-                mlp.train()
-            elif model == "RNN":
-                rnn.train()
-            elif model == "Least Squares":
-                ls.train()
+    questions = [
+        inquirer.Checkbox(
+            "models",
+            message="Select the classifiers to train (use space to select multiple)",
+            choices=models + ["All 4 Classifiers"],
+        )
+    ]
+
+    answers = inquirer.prompt(questions)
+    selected_models = answers["models"]
+
+    if "All 4 Classifiers" in selected_models:
+        selected_models = models
+
+    for model in selected_models:
+        train_model(model)
 
 
 def main():
@@ -101,13 +119,14 @@ def main():
         elif answers["option"] == options[3]:  # Transcribe audio
             transcribe_options = [
                 "From the test in the database?",
+                "From a file of your choice?",
                 "Back",
             ]
             answers = inquirer.prompt(
                 [
                     inquirer.List(
                         "transcribe_option",
-                        message="Do you want to transcribe an audio file?",
+                        message="How do you want to transcribe an audio file?",
                         choices=transcribe_options,
                     )
                 ]
@@ -160,6 +179,50 @@ def main():
                 show_predictions(audio, sample_rate, intervals_original, mlp_predictions_median, frame_rate, "MLP", audio_file)
                 show_predictions(audio, sample_rate, intervals_original, rnn_predictions_median, frame_rate, "RNN", audio_file)
                 show_predictions(audio, sample_rate, intervals_original, ls_predictions_median, frame_rate,"Least_Squares", audio_file)
+
+            elif answers["transcribe_option"] == "From a file of your choice?":
+                print("Please provide the absolute path to the audio file to transcribe.")
+                file_path = input("File path: ").strip()
+
+                if os.path.exists(file_path):
+                    print(f"Transcribing audio file: {file_path}")
+
+                    # Load the trained models
+                    svm.load_model()
+                    mlp.load_model()
+                    rnn.load_model()
+                    ls.load_model()
+
+                    # Extract features from the selected audio file
+                    _, features, sample_rate, audio = load_and_extract_features(file_path, show_plots=False)
+                    hop_length = HOP_LENGTH
+                    frame_rate = sample_rate / hop_length
+
+                    # get the intervals of the voice
+                    intervals_original, texts = transcribe_audio(file_path)
+
+                    L = 5  # Window size for median filter
+
+                    # Predict using the trained models
+                    svm_predictions = svm.predict(features)
+                    svm_predictions_median = median_filter(svm_predictions, size=L)
+
+                    mlp_predictions = mlp.predict(features)
+                    mlp_predictions_median = median_filter(mlp_predictions, size=L)
+
+                    rnn_predictions = rnn.predict(features, n_of_files=1)
+                    rnn_predictions_median = np.squeeze(median_filter(rnn_predictions, size=L))
+
+                    ls_predictions = ls.predict(features)
+                    ls_predictions_median = median_filter(ls_predictions, size=L)
+
+                    # Show the predictions
+                    show_predictions(audio, sample_rate, intervals_original, svm_predictions_median, frame_rate, "SVM", file_path)
+                    show_predictions(audio, sample_rate, intervals_original, mlp_predictions_median, frame_rate, "MLP", file_path)
+                    show_predictions(audio, sample_rate, intervals_original, rnn_predictions_median, frame_rate, "RNN", file_path)
+                    show_predictions(audio, sample_rate, intervals_original, ls_predictions_median, frame_rate,"Least_Squares", file_path)
+                else:
+                    print(f"File not found: {file_path}")
 
             elif answers["transcribe_option"] == "Back":
                 continue
