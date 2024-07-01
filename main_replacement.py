@@ -1,6 +1,6 @@
 import inquirer
 import os
-import load_database as ldb
+import source2024.load_database as ldb
 from source2024.classifiers import rnn, svm, mlp, least_squares as ls
 import sys
 from source2024 import feature_extraction as fe
