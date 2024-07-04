@@ -18,7 +18,7 @@ def preprocess_data(x, y=None):
         y (np.ndarray): Labels.
 
     Returns:
-        np.ndarray, np.ndarray: Preprocessed features and labels.
+        tf.Tensor, tf.Tensor: Preprocessed features and labels.
     """
     x = tf.convert_to_tensor(x, dtype=tf.float32)
     if x.shape.rank == 1:
@@ -32,6 +32,15 @@ def preprocess_data(x, y=None):
 
 
 def add_bias_term(features):
+    """
+    Add a bias term to the features.
+
+    Args:
+        features (tf.Tensor): Input features.
+
+    Returns:
+        tf.Tensor: Features with bias term added.
+    """
     return tf.concat([tf.ones((features.shape[0], 1), dtype=tf.float32), features], axis=1)
 
 
@@ -92,7 +101,7 @@ def load_model(output_dir=OUTPUT_DIR):
     Load the trained Least Squares model from the given path.
 
     Returns:
-        np.ndarray: Loaded Least Squares weights.
+        tf.Tensor: Loaded Least Squares weights.
     """
     model_path = os.path.join(output_dir, 'ls_model.pkl')
     if not os.path.isfile(model_path):
