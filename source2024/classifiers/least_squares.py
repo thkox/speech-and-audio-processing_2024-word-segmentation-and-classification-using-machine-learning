@@ -10,6 +10,16 @@ OUTPUT_DIR = 'auxiliary2024/output/classifiers'
 
 
 def preprocess_data(x, y=None):
+    """
+    Preprocess the input data and add bias term.
+
+    Args:
+        x (np.ndarray): Input features.
+        y (np.ndarray): Labels.
+
+    Returns:
+        np.ndarray, np.ndarray: Preprocessed features and labels.
+    """
     x = tf.convert_to_tensor(x, dtype=tf.float32)
     if x.shape.rank == 1:
         x = tf.expand_dims(x, axis=-1)
