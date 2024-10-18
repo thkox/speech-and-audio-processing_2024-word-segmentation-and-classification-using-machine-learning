@@ -55,17 +55,22 @@ The repository is structured as follows:
 
 ```
 /source2024/
-    svm.py                      # SVM classifier implementation
-    mlp.py                      # MLP classifier implementation
-    rnn.py                      # RNN classifier implementation
-    least_squares.py            # Least Squares classifier implementation
-    main.py                     # Main script for full process execution
+    svm.py                              # SVM classifier implementation
+    mlp.py                              # MLP classifier implementation
+    rnn.py                              # RNN classifier implementation
+    least_squares.py                    # Least Squares classifier implementation
+    main.py                             # Main script for full process execution
 /docs/
-    Project-description.pdf     # Description of the project
-    Project-documentation.pdf   # Detailed project documentation
+    Project-description.pdf             # Description of the project
+    Project-documentation.pdf           # Detailed project documentation
+/images/
+    program_generations.png             # Generation messages
+    program_solution_exists.png         # Solution found message
+    program_solution_exists_image.png   # Graph visualization
+    program_start.png                   # Program start message
 /auxiliary2024/
-    input/                      # Contains the VOiCES dataset
-    output/                     # Output directory for classifier predictions
+    input/                              # Contains the VOiCES dataset
+    output/                             # Output directory for classifier predictions
 ```
 
 Additionally:
