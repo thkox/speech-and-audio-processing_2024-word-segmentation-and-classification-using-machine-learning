@@ -5,9 +5,8 @@
 This project is an individual assignment for the "Speech and Audio Processing" course, offered in the 8th semester of the 2024 academic year at the University of Piraeus, Department of Informatics. The project focuses on developing a Python program that segments speech recordings into words and classifies them into background or foreground sounds using machine learning classifiers. The system must process the input audio and identify the word boundaries without any prior knowledge of the number of words.
 
 ## Course Information
-
-- **Institution:** University of Piraeus
-- **Department:** Department of Informatics
+- **Institution:** [University of Piraeus](https://www.unipi.gr/en/)
+- **Department:** [Department of Informatics](https://cs.unipi.gr/en/)
 - **Course:** Speech and Audio Processing (2024)
 - **Semester:** 8th
 
